@@ -3,204 +3,78 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Validador de Vigencia de Póliza VENTO</title>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Segoe UI no siempre disponible en web; usamos system font stack que incluye Segoe UI en Windows -->
+<title>Calculadora de Servicios VENTO</title>
 <style>
   :root{
-    --color-bg: #FFFFFF;      /* Blanco - 50% uso */
-    --color-text: #231F20;    /* Negro - 30% uso */
-    --color-muted: #616160;   /* Gris - 15% uso */
-    --color-accent: #F28F17;  /* Naranja - 5% uso */
-    --radius: 10px;
-    --shadow: 0 6px 18px rgba(35,31,32,0.08);
-    --max-width: 1100px;
+    --bg:#FFFFFF; --text:#231F20; --muted:#616160; --accent:#F28F17;
+    --radius:8px; --shadow: 0 6px 18px rgba(35,31,32,0.06);
   }
-  html,body{height:100%;margin:0;background:var(--color-bg);color:var(--color-text);font-family:"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;}
-  .container{max-width:var(--max-width);margin:28px auto;padding:20px;}
-  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
-  .brand{display:flex;gap:12px;align-items:center;}
-  .logo{width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,var(--color-accent),#ffb86b);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px;box-shadow:var(--shadow);}
-  h1{font-size:38px;margin:0;font-weight:700;}
-  p.lead{margin:4px 0 0;color:var(--color-muted);font-size:16px;}
-  .card{background:var(--color-bg);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:16px;}
-  .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;}
-  .form-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
-  label{font-size:14px;color:var(--color-muted);min-width:110px;}
-  input[type="text"], input[type="number"], input[type="date"], select{flex:1;padding:10px;border:1px solid #e6e6e6;border-radius:8px;font-size:15px;color:var(--color-text);}
-  button{background:var(--color-accent);color:white;border:0;padding:10px 14px;border-radius:8px;font-weight:600;cursor:pointer;}
-  .btn-ghost{background:transparent;border:1px solid #eee;color:var(--color-text);}
-  .status-pill{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:700;color:white;}
-  .status-valid{background:#2ecc71;}
-  .status-warning{background:#f1c40f;color:#231f20;}
-  .status-invalid{background:#e74c3c;}
-  table{width:100%;border-collapse:collapse;font-size:15px;}
-  th,td{padding:10px;border-bottom:1px solid #f2f2f2;text-align:left;}
-  th{color:var(--color-muted);font-weight:600;}
-  .small{font-size:13px;color:var(--color-muted);}
-  .service-actions button{margin-right:6px;}
-  .timeline{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
-  .timeline .item{background:#fafafa;border:1px solid #f0f0f0;padding:8px 10px;border-radius:8px;font-size:13px;color:var(--color-muted);}
-  .accent{color:var(--color-accent);font-weight:700;}
-  .muted{color:var(--color-muted);}
-  .right{display:flex;flex-direction:column;gap:8px;}
-  .file-preview{max-width:100%;height:80px;object-fit:contain;border-radius:6px;border:1px dashed #eee;padding:6px;background:#fff;}
-  footer{margin-top:18px;color:var(--color-muted);font-size:13px;text-align:center;}
-  @media(max-width:900px){.grid{grid-template-columns:1fr;}.right{order:-1}}
-  /* print */
-  @media print{
-    header, .no-print{display:none}
-    body{background:white}
-  }
+  body{font-family:"Segoe UI", Roboto, Arial, sans-serif;background:var(--bg);color:var(--text);margin:18px;}
+  .wrap{max-width:900px;margin:0 auto;}
+  h1{font-size:28px;margin:0 0 8px;font-weight:700;}
+  p.lead{color:var(--muted);margin:0 0 16px;}
+  .card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:12px;}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;}
+  input[type="date"], input[type="number"], input[type="text"], select{width:100%;padding:10px;border:1px solid #e9e9e9;border-radius:6px;font-size:15px;margin-bottom:10px;}
+  button{background:var(--accent);color:#fff;border:0;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700;}
+  .btn-ghost{background:transparent;border:1px solid #eee;color:var(--text);padding:8px 12px;border-radius:8px;cursor:pointer;}
+  table{width:100%;border-collapse:collapse;margin-top:8px;}
+  th,td{padding:8px;border-bottom:1px solid #f3f3f3;text-align:left;font-size:14px;}
+  th{color:var(--muted);font-weight:600;}
+  .status-valid{color:#2e7d32;font-weight:700;}
+  .status-bad{color:#c62828;font-weight:700;}
+  .muted{color:var(--muted);font-size:13px;}
+  .small{font-size:13px;color:var(--muted);}
+  .row{display:flex;gap:8px;align-items:center;}
+  .right{display:flex;gap:8px;align-items:center;margin-left:auto;}
+  @media(max-width:700px){ .row{flex-direction:column;align-items:stretch;} .right{margin-left:0;} }
 </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <div class="brand">
-      <div class="logo">V</div>
-      <div>
-        <h1>Póliza VENTO — Validador</h1>
-        <p class="lead">Calcula servicios, fechas límite y vigencia según la póliza de garantía.</p>
+<div class="wrap">
+  <h1>Calculadora de servicios VENTO</h1>
+  <p class="lead">Introduce la fecha de factura y el kilometraje actual. La calculadora te indicará qué servicios corresponden y te permitirá registrar si ya se realizaron.</p>
+
+  <div class="card">
+    <label for="fechaFactura">Fecha de factura</label>
+    <input id="fechaFactura" type="date" />
+
+    <label for="kmActual">Kilometraje actual</label>
+    <input id="kmActual" type="number" min="0" value="0" />
+
+    <div class="row" style="margin-top:6px;">
+      <button id="btnCalcular">Calcular servicios requeridos</button>
+      <button id="btnReset" class="btn-ghost">Limpiar</button>
+      <div class="right">
+        <div class="small">Vigencia: <span id="vigenciaText" class="muted">—</span></div>
       </div>
     </div>
-    <div class="no-print">
-      <button id="btnPrint">Imprimir / Exportar</button>
-    </div>
-  </header>
-
-  <div class="grid">
-    <div>
-      <div class="card">
-        <h2 style="font-size:24px;margin:0 0 8px;">Buscar / Crear póliza</h2>
-        <div class="form-row">
-          <label for="vin">NIV / VIN</label>
-          <input id="vin" type="text" placeholder="Ej: 1HD1..." />
-        </div>
-        <div class="form-row">
-          <label for="factura">No. Factura</label>
-          <input id="factura" type="text" placeholder="Número de factura" />
-        </div>
-        <div class="form-row">
-          <label for="fechaFactura">Fecha factura</label>
-          <input id="fechaFactura" type="date" />
-        </div>
-        <div class="form-row">
-          <label for="kmActual">Kilometraje actual</label>
-          <input id="kmActual" type="number" min="0" value="0" />
-        </div>
-        <div style="display:flex;gap:8px;margin-top:8px;">
-          <button id="btnLoad">Buscar / Cargar</button>
-          <button id="btnNew" class="btn-ghost">Crear nueva</button>
-        </div>
-        <p class="small" style="margin-top:10px;">Los datos se guardan localmente en tu navegador. Para producción conecta con backend y base de datos.</p>
-      </div>
-
-      <div class="card" id="polizaCard" style="display:none;">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div>
-            <div class="muted">Póliza</div>
-            <div style="font-size:18px;font-weight:700" id="polizaTitle">VIN: -</div>
-            <div class="small" id="polizaSub">Factura: - · Fecha: -</div>
-          </div>
-          <div>
-            <div id="vigenciaPill" class="status-pill status-valid">VIGENTE</div>
-            <div class="small" style="text-align:right;margin-top:6px;" id="vigenciaDetail">Válida hasta: - · Km límite: -</div>
-          </div>
-        </div>
-
-        <hr style="margin:12px 0;border:none;border-top:1px solid #f2f2f2;" />
-
-        <h3 style="font-size:20px;margin:0 0 8px;">Tabla de servicios</h3>
-        <div style="overflow:auto;">
-          <table id="servicesTable" aria-live="polite">
-            <thead>
-              <tr><th>Servicio</th><th>Km límite</th><th>Fecha límite</th><th>Km registrado</th><th>Estado</th><th class="no-print">Acciones</th></tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
-          <div class="muted">Último registro: <span id="lastReg">—</span></div>
-          <div>
-            <button id="btnExportPDF" class="btn-ghost no-print">Descargar talón (imprimir)</button>
-            <button id="btnReset" class="btn-ghost no-print">Eliminar póliza</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card" id="logCard" style="display:none;">
-        <h3 style="font-size:20px;margin:0 0 8px;">Historial de servicios</h3>
-        <div id="timeline" class="timeline"></div>
-      </div>
-    </div>
-
-    <aside class="right">
-      <div class="card">
-        <h3 style="font-size:20px;margin:0 0 8px;">Registrar servicio (CESVE)</h3>
-        <div class="form-row">
-          <label for="selService">Servicio</label>
-          <select id="selService"></select>
-        </div>
-        <div class="form-row">
-          <label for="regDate">Fecha</label>
-          <input id="regDate" type="date" />
-        </div>
-        <div class="form-row">
-          <label for="regKm">Kilometraje</label>
-          <input id="regKm" type="number" min="0" />
-        </div>
-        <div class="form-row">
-          <label for="cesveName">CESVE</label>
-          <input id="cesveName" type="text" placeholder="Nombre del centro" />
-        </div>
-        <div class="form-row">
-          <label for="sello">Sello (imagen)</label>
-          <input id="sello" type="file" accept="image/*" />
-        </div>
-        <div id="selloPreviewWrap" style="display:none;">
-          <img id="selloPreview" class="file-preview" alt="Sello preview" />
-        </div>
-        <div style="display:flex;gap:8px;margin-top:8px;">
-          <button id="btnRegister">Registrar servicio</button>
-          <button id="btnClear" class="btn-ghost">Limpiar</button>
-        </div>
-        <p class="small" style="margin-top:10px;">Solo los CESVE autorizados deben sellar. En esta demo no hay autenticación.</p>
-      </div>
-
-      <div class="card">
-        <h3 style="font-size:20px;margin:0 0 8px;">Alertas</h3>
-        <div id="alerts"></div>
-      </div>
-
-      <div class="card no-print">
-        <h3 style="font-size:18px;margin:0 0 8px;">Instrucciones rápidas</h3>
-        <ul class="small">
-          <li>Crear o cargar póliza con VIN y fecha de factura.</li>
-          <li>Registrar servicios en orden; si omites uno, la garantía se anula.</li>
-          <li>Imprimir talón con el botón Imprimir.</li>
-        </ul>
-      </div>
-    </aside>
   </div>
 
-  <footer>
-    <div>Aplicación demo — Validación de vigencia de póliza VENTO · Datos guardados localmente</div>
-  </footer>
+  <div id="resultadoWrap" class="card" style="display:none;">
+    <h2 style="font-size:18px;margin:0 0 8px;">Servicios requeridos</h2>
+    <div class="small muted">Se consideran requeridos si se cumple la condición por fecha o por km (lo que ocurra primero).</div>
+
+    <table id="tablaServicios" aria-live="polite">
+      <thead>
+        <tr><th>Servicio</th><th>Km límite</th><th>Fecha límite</th><th>Requerido por</th><th>¿Realizado?</th><th>Fecha realizado</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div style="margin-top:12px;display:flex;gap:8px;align-items:center;">
+      <button id="btnGuardar">Guardar en local (opcional)</button>
+      <button id="btnEvaluar" class="btn-ghost">Evaluar garantía</button>
+      <div style="margin-left:auto;" class="small muted">Si falta un servicio requerido y su fecha límite ya pasó, la garantía se anula.</div>
+    </div>
+
+    <div id="evaluacion" style="margin-top:12px;"></div>
+  </div>
 </div>
 
 <script>
-/*
-  Demo app logic:
-  - Tabla de servicios fija (1..13) con km y tiempo según póliza.
-  - Vigencia: 36 meses desde fecha factura o 33,000 km (lo que ocurra primero).
-  - Al registrar servicio se guarda en localStorage por VIN.
-  - Alertas por km y por tiempo (umbral configurable).
-*/
-
-// Configuración de servicios (km límite y tiempo en meses)
-const SERVICE_DEFS = [
+/* Definición de servicios según póliza */
+const SERVICIOS = [
   {num:1, km:300, months:1},
   {num:2, km:2000, months:3},
   {num:3, km:4000, months:6},
@@ -216,328 +90,148 @@ const SERVICE_DEFS = [
   {num:13, km:33000, months:36}
 ];
 
-const UM_KM = 200; // umbral km para alerta
-const UM_DAYS = 15; // umbral dias para alerta
-
-// Helpers
 const $ = id => document.getElementById(id);
-const formatDate = d => d ? new Date(d).toLocaleDateString('es-MX') : '-';
-const addMonths = (date, months) => {
-  const d = new Date(date);
+const tablaBody = document.querySelector('#tablaServicios tbody');
+const resultadoWrap = $('resultadoWrap');
+const vigenciaText = $('vigenciaText');
+
+function addMonths(dateStr, months){
+  const d = new Date(dateStr);
   d.setMonth(d.getMonth() + months);
   return d;
-};
-
-// Storage keys
-const STORAGE_PREFIX = 'vento_poliza_';
-
-// UI elements
-const vinInput = $('vin'), facturaInput = $('factura'), fechaFacturaInput = $('fechaFactura'), kmActualInput = $('kmActual');
-const btnLoad = $('btnLoad'), btnNew = $('btnNew'), polizaCard = $('polizaCard'), polizaTitle = $('polizaTitle'), polizaSub = $('polizaSub');
-const vigenciaPill = $('vigenciaPill'), vigenciaDetail = $('vigenciaDetail');
-const servicesTableBody = $('servicesTable').querySelector('tbody');
-const selService = $('selService'), regDate = $('regDate'), regKm = $('regKm'), cesveName = $('cesveName'), selloInput = $('sello');
-const selloPreviewWrap = $('selloPreviewWrap'), selloPreview = $('selloPreview');
-const btnRegister = $('btnRegister'), btnClear = $('btnClear'), btnReset = $('btnReset');
-const timeline = $('timeline'), logCard = $('logCard'), lastReg = $('lastReg'), alertsDiv = $('alerts');
-const btnPrint = $('btnPrint'), btnExportPDF = $('btnExportPDF');
-
-// Populate select
-SERVICE_DEFS.forEach(s => {
-  const opt = document.createElement('option');
-  opt.value = s.num;
-  opt.textContent = `${s.num}º Servicio — ${s.km} km / ${s.months} meses`;
-  selService.appendChild(opt);
-});
-
-// Event listeners
-btnNew.addEventListener('click', () => {
-  if(!vinInput.value || !fechaFacturaInput.value){ alert('Ingresa VIN y fecha de factura para crear la póliza.'); return; }
-  const pol = createPolizaObject();
-  savePoliza(pol);
-  loadPoliza(pol.vin);
-});
-
-btnLoad.addEventListener('click', () => {
-  if(!vinInput.value){ alert('Ingresa VIN para buscar.'); return; }
-  loadPoliza(vinInput.value.trim());
-});
-
-btnRegister.addEventListener('click', async () => {
-  const vin = vinInput.value.trim();
-  if(!vin){ alert('Carga una póliza primero.'); return; }
-  const pol = loadPolizaObject(vin);
-  if(!pol){ alert('No existe la póliza. Crea una nueva.'); return; }
-  const svcNum = parseInt(selService.value,10);
-  const fecha = regDate.value;
-  const km = Number(regKm.value);
-  if(!fecha || !km){ alert('Ingresa fecha y kilometraje del servicio.'); return; }
-  // prevent retroceso
-  const last = pol.services.reduce((a,b)=> a.km_registrado && b.km_registrado ? Math.max(a.km_registrado,b.km_registrado) : (a.km_registrado||b.km_registrado||0));
-  if(last && km < last){ if(!confirm('El kilometraje es menor que el último registro. Deseas continuar?')) return; }
-  // read sello image
-  let selloData = null;
-  if(selloInput.files && selloInput.files[0]){
-    selloData = await fileToDataUrl(selloInput.files[0]);
-  }
-  registerService(pol.vin, svcNum, fecha, km, cesveName.value.trim(), selloData);
-  loadPoliza(pol.vin);
-  // clear form
-  regDate.value=''; regKm.value=''; cesveName.value=''; selloInput.value=''; selloPreviewWrap.style.display='none';
-});
-
-btnClear.addEventListener('click', () => { regDate.value=''; regKm.value=''; cesveName.value=''; selloInput.value=''; selloPreviewWrap.style.display='none'; });
-
-selloInput.addEventListener('change', () => {
-  const f = selloInput.files && selloInput.files[0];
-  if(!f){ selloPreviewWrap.style.display='none'; return; }
-  const reader = new FileReader();
-  reader.onload = e => { selloPreview.src = e.target.result; selloPreviewWrap.style.display='block'; };
-  reader.readAsDataURL(f);
-});
-
-btnReset.addEventListener('click', () => {
-  const vin = vinInput.value.trim();
-  if(!vin) return alert('Carga una póliza primero.');
-  if(confirm('Eliminar póliza y todos sus registros localmente?')){ localStorage.removeItem(STORAGE_PREFIX + vin); location.reload(); }
-});
-
-btnPrint.addEventListener('click', () => window.print());
-btnExportPDF.addEventListener('click', () => window.print());
-
-// Core functions
-function createPolizaObject(){
-  const vin = vinInput.value.trim();
-  const factura = facturaInput.value.trim();
-  const fechaFactura = fechaFacturaInput.value;
-  const kmInicial = Number(kmActualInput.value || 0);
-  const services = SERVICE_DEFS.map(s => ({
-    servicio_num: s.num,
-    km_limite: s.km,
-    months: s.months,
-    fecha_limite: addMonths(fechaFactura, s.months).toISOString(),
-    km_registrado: null,
-    fecha_registro: null,
-    cesve: null,
-    sello: null,
-    estado: 'Pendiente'
-  }));
-  return {
-    vin,
-    factura,
-    fecha_factura: fechaFactura,
-    km_inicial: kmInicial,
-    created_at: new Date().toISOString(),
-    services
-  };
 }
+function formatDate(d){ if(!d) return '-'; const dt = new Date(d); return dt.toLocaleDateString('es-MX'); }
 
-function savePoliza(pol){
-  localStorage.setItem(STORAGE_PREFIX + pol.vin, JSON.stringify(pol));
-}
-
-function loadPolizaObject(vin){
-  const raw = localStorage.getItem(STORAGE_PREFIX + vin);
-  return raw ? JSON.parse(raw) : null;
-}
-
-function loadPoliza(vin){
-  const pol = loadPolizaObject(vin);
-  if(!pol){ alert('Póliza no encontrada. Puedes crear una nueva.'); return; }
-  // render
-  polizaCard.style.display='block';
-  logCard.style.display='block';
-  polizaTitle.textContent = `VIN: ${pol.vin}`;
-  polizaSub.textContent = `Factura: ${pol.factura || '-'} · Fecha: ${formatDate(pol.fecha_factura)}`;
-  // compute vigencia
-  const fechaFactura = new Date(pol.fecha_factura);
-  const vigenciaFecha = addMonths(fechaFactura, 36);
+$('btnCalcular').addEventListener('click', () => {
+  const fechaFactura = $('fechaFactura').value;
+  const kmActual = Number($('kmActual').value || 0);
+  if(!fechaFactura){ alert('Ingresa la fecha de factura.'); return; }
+  // calcular vigencia
+  const vigFecha = addMonths(fechaFactura, 36);
   const kmMax = 33000;
-  const kmActual = Number(kmActualInput.value || pol.km_inicial || 0);
-  const vigStatus = computeVigencia(kmActual, kmMax, vigenciaFecha);
-  renderVigencia(vigStatus, vigenciaFecha, kmMax);
-  // render services table
-  renderServicesTable(pol);
-  renderTimeline(pol);
-  renderAlerts(pol, kmActual, vigenciaFecha, kmMax);
-  lastReg.textContent = pol.services.filter(s=>s.fecha_registro).length ? formatDate(pol.services.filter(s=>s.fecha_registro).slice(-1)[0].fecha_registro) : '-';
-}
+  const hoy = new Date();
+  let vigMsg = '';
+  if(hoy > vigFecha || kmActual > kmMax) vigMsg = 'Garantía vencida';
+  else vigMsg = `Válida hasta ${formatDate(vigFecha)} o ${kmMax.toLocaleString()} km`;
+  vigenciaText.textContent = vigMsg;
 
-function computeVigencia(kmActual, kmMax, vigenciaFecha){
-  const now = new Date();
-  if(kmActual > kmMax) return {status:'invalid', reason:'Km excedido'};
-  if(now > vigenciaFecha) return {status:'invalid', reason:'Fecha vencida'};
-  // if within 30 days or within 500 km -> warning
-  const daysLeft = Math.ceil((vigenciaFecha - now)/(1000*60*60*24));
-  const kmLeft = kmMax - kmActual;
-  if(daysLeft <= 30 || kmLeft <= 500) return {status:'warning', daysLeft, kmLeft};
-  return {status:'valid', daysLeft, kmLeft};
-}
-
-function renderVigencia(vigStatus, vigenciaFecha, kmMax){
-  if(vigStatus.status === 'valid'){
-    vigenciaPill.className = 'status-pill status-valid';
-    vigenciaPill.textContent = 'VIGENTE';
-  } else if(vigStatus.status === 'warning'){
-    vigenciaPill.className = 'status-pill status-warning';
-    vigenciaPill.textContent = 'PRÓXIMO';
-  } else {
-    vigenciaPill.className = 'status-pill status-invalid';
-    vigenciaPill.textContent = 'ANULADA';
-  }
-  vigenciaDetail.textContent = `Válida hasta: ${formatDate(vigenciaFecha)} · Km máximo: ${kmMax.toLocaleString()}`;
-}
-
-function renderServicesTable(pol){
-  servicesTableBody.innerHTML = '';
-  pol.services.forEach(s => {
+  // construir tabla
+  tablaBody.innerHTML = '';
+  SERVICIOS.forEach(s => {
+    const fechaLim = addMonths(fechaFactura, s.months);
+    const requeridoPor = (kmActual >= s.km) ? 'km' : (hoy >= fechaLim ? 'fecha' : ( (kmActual >= s.km || hoy >= fechaLim) ? 'ambos' : '-' ));
+    // determinar si requerido: si kmActual >= km OR hoy >= fechaLim
+    const requerido = (kmActual >= s.km) || (hoy >= fechaLim);
     const tr = document.createElement('tr');
-    const estado = s.fecha_registro ? 'Realizado' : 'Pendiente';
     tr.innerHTML = `
-      <td>${s.servicio_num}º Servicio</td>
-      <td>${s.km_limite.toLocaleString()} km</td>
-      <td>${formatDate(s.fecha_limite)}</td>
-      <td>${s.km_registrado ? s.km_registrado.toLocaleString() + ' km' : '-'}</td>
-      <td>${s.fecha_registro ? '<span class="small">Realizado</span>' : '<span class="small muted">Pendiente</span>'}</td>
-      <td class="service-actions no-print">
-        <button class="btn-ghost" data-action="view" data-num="${s.servicio_num}">Ver</button>
-        <button class="btn-ghost" data-action="delete" data-num="${s.servicio_num}">Eliminar</button>
+      <td>${s.num}º Servicio</td>
+      <td>${s.km.toLocaleString()} km</td>
+      <td>${formatDate(fechaLim)}</td>
+      <td>${requerido ? (kmActual >= s.km && hoy >= fechaLim ? 'km y fecha' : (kmActual >= s.km ? 'km' : 'fecha')) : '-'}</td>
+      <td>
+        ${requerido ? `<select data-num="${s.num}" class="selRealizado">
+          <option value="no">No</option>
+          <option value="si">Sí</option>
+        </select>` : '<span class="muted">No aplica</span>'}
+      </td>
+      <td>
+        ${requerido ? `<input type="date" data-num="${s.num}" class="inputFecha" disabled />` : '-' }
       </td>
     `;
-    servicesTableBody.appendChild(tr);
+    tablaBody.appendChild(tr);
   });
-  // attach actions
-  servicesTableBody.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', e => {
-      const action = btn.getAttribute('data-action');
-      const num = Number(btn.getAttribute('data-num'));
-      const vin = vinInput.value.trim();
-      if(action === 'view') viewService(vin, num);
-      if(action === 'delete') {
-        if(confirm('Eliminar registro de servicio (si existe) para este servicio?')){
-          deleteServiceRecord(vin, num);
-          loadPoliza(vin);
-        }
-      }
+
+  // activar listeners para selects
+  document.querySelectorAll('.selRealizado').forEach(sel => {
+    sel.addEventListener('change', e => {
+      const val = e.target.value;
+      const num = e.target.getAttribute('data-num');
+      const input = document.querySelector('.inputFecha[data-num="'+num+'"]');
+      if(val === 'si'){ input.disabled = false; input.focus(); }
+      else { input.disabled = true; input.value = ''; }
     });
   });
-}
 
-function viewService(vin, num){
-  const pol = loadPolizaObject(vin);
-  if(!pol) return;
-  const s = pol.services.find(x=>x.servicio_num===num);
-  if(!s) return;
-  alert(`Servicio ${num}\nKm límite: ${s.km_limite}\nFecha límite: ${formatDate(s.fecha_limite)}\nKm registrado: ${s.km_registrado || '-'}\nFecha registro: ${s.fecha_registro || '-'}`);
-}
-
-function deleteServiceRecord(vin, num){
-  const pol = loadPolizaObject(vin);
-  if(!pol) return;
-  const s = pol.services.find(x=>x.servicio_num===num);
-  if(!s) return;
-  s.km_registrado = null; s.fecha_registro = null; s.cesve = null; s.sello = null; s.estado='Pendiente';
-  savePoliza(pol);
-}
-
-function registerService(vin, svcNum, fecha, km, cesve, selloData){
-  const pol = loadPolizaObject(vin);
-  if(!pol) return;
-  const s = pol.services.find(x=>x.servicio_num===svcNum);
-  if(!s) return;
-  s.km_registrado = km;
-  s.fecha_registro = fecha;
-  s.cesve = cesve || null;
-  s.sello = selloData || null;
-  s.estado = 'Realizado';
-  savePoliza(pol);
-  // update kmActual input if higher
-  const currentKm = Number(kmActualInput.value || 0);
-  if(km > currentKm) kmActualInput.value = km;
-}
-
-function renderTimeline(pol){
-  timeline.innerHTML = '';
-  const done = pol.services.filter(s=>s.fecha_registro).sort((a,b)=> new Date(a.fecha_registro) - new Date(b.fecha_registro));
-  if(done.length===0){ timeline.innerHTML = '<div class="item">Sin servicios registrados</div>'; return; }
-  done.forEach(s => {
-    const el = document.createElement('div');
-    el.className = 'item';
-    el.innerHTML = `<strong>${s.servicio_num}º</strong> · ${formatDate(s.fecha_registro)} · ${s.km_registrado} km · <span class="muted">${s.cesve || '-'}</span>`;
-    timeline.appendChild(el);
-  });
-}
-
-function renderAlerts(pol, kmActual, vigenciaFecha, kmMax){
-  alertsDiv.innerHTML = '';
-  const alerts = [];
-  // check missing mandatory services: if a service's fecha_limite passed and not registered -> alert
-  const now = new Date();
-  pol.services.forEach(s => {
-    const fechaLim = new Date(s.fecha_limite);
-    if(now > fechaLim && !s.fecha_registro){
-      alerts.push({type:'danger', text:`Falta ${s.servicio_num}º servicio (fecha límite ${formatDate(s.fecha_limite)}). Omisión anula la garantía.`});
-    } else if(!s.fecha_registro && (fechaLim - now)/(1000*60*60*24) <= UM_DAYS){
-      alerts.push({type:'warning', text:`${s.servicio_num}º servicio próximo a vencer en ${Math.ceil((fechaLim-now)/(1000*60*60*24))} días.`});
-    }
-    if(!s.fecha_registro && (s.km_limite - kmActual) <= UM_KM){
-      alerts.push({type:'warning', text:`${s.servicio_num}º servicio próximo por km (faltan ${s.km_limite - kmActual} km).`});
-    }
-  });
-  // vigencia
-  if(kmActual > kmMax) alerts.push({type:'danger', text:`Km máximo de garantía excedido (${kmActual} > ${kmMax}).`});
-  if(new Date() > vigenciaFecha) alerts.push({type:'danger', text:`Fecha de garantía vencida (${formatDate(vigenciaFecha)}).`});
-  // render
-  if(alerts.length===0){ alertsDiv.innerHTML = '<div class="small muted">Sin alertas</div>'; return; }
-  alerts.forEach(a => {
-    const d = document.createElement('div');
-    d.style.padding='8px'; d.style.borderRadius='8px'; d.style.marginBottom='8px';
-    if(a.type==='danger'){ d.style.background='#fdecea'; d.style.color='#b71c1c'; d.style.border='1px solid #f5c6cb'; }
-    else { d.style.background='#fff7e6'; d.style.color='#7a4b00'; d.style.border='1px solid #ffe0b2'; }
-    d.textContent = a.text;
-    alertsDiv.appendChild(d);
-  });
-}
-
-// Utility: convert file to data URL
-function fileToDataUrl(file){
-  return new Promise((res,rej)=>{
-    const r = new FileReader();
-    r.onload = e => res(e.target.result);
-    r.onerror = e => rej(e);
-    r.readAsDataURL(file);
-  });
-}
-
-// On load: if VIN present in URL hash, load
-window.addEventListener('load', () => {
-  const hash = location.hash.replace('#','');
-  if(hash){ vinInput.value = decodeURIComponent(hash); loadPoliza(hash); }
+  resultadoWrap.style.display = 'block';
+  $('evaluacion').innerHTML = '';
 });
 
-// For demo: allow quick sample data
-(function seedDemo(){
-  if(localStorage.getItem(STORAGE_PREFIX + 'DEMO123')) return;
-  const demo = {
-    vin:'DEMO123',
-    factura:'F-45936',
-    fecha_factura: new Date().toISOString().slice(0,10),
-    km_inicial: 300,
-    created_at: new Date().toISOString(),
-    services: SERVICE_DEFS.map(s => ({
-      servicio_num: s.num,
-      km_limite: s.km,
-      months: s.months,
-      fecha_limite: addMonths(new Date().toISOString().slice(0,10), s.months).toISOString(),
-      km_registrado: (s.num===1?300:null),
-      fecha_registro: (s.num===1?new Date().toISOString().slice(0,10):null),
-      cesve: (s.num===1?'CESVE Demo':null),
-      sello: null,
-      estado: (s.num===1?'Realizado':'Pendiente')
-    }))
-  };
-  localStorage.setItem(STORAGE_PREFIX + demo.vin, JSON.stringify(demo));
-})();
+// Guardar en localStorage (opcional)
+$('btnGuardar').addEventListener('click', () => {
+  const fechaFactura = $('fechaFactura').value;
+  const kmActual = Number($('kmActual').value || 0);
+  if(!fechaFactura){ alert('Ingresa fecha de factura.'); return; }
+  const registros = [];
+  document.querySelectorAll('.selRealizado').forEach(sel => {
+    const num = sel.getAttribute('data-num');
+    const realizado = sel.value === 'si';
+    const fecha = document.querySelector('.inputFecha[data-num="'+num+'"]').value || null;
+    registros.push({num: Number(num), realizado, fecha});
+  });
+  const key = 'vento_calc_' + fechaFactura + '_' + kmActual;
+  localStorage.setItem(key, JSON.stringify({fechaFactura, kmActual, registros, savedAt: new Date().toISOString()}));
+  alert('Guardado localmente con clave: ' + key);
+});
+
+// Evaluar garantía: si existe servicio requerido y su fecha límite ya pasó y no está realizado -> anula garantía
+$('btnEvaluar').addEventListener('click', () => {
+  const fechaFactura = $('fechaFactura').value;
+  const kmActual = Number($('kmActual').value || 0);
+  if(!fechaFactura){ alert('Ingresa fecha de factura.'); return; }
+  const hoy = new Date();
+  let anulada = false;
+  let mensajes = [];
+  SERVICIOS.forEach(s => {
+    const fechaLim = addMonths(fechaFactura, s.months);
+    const requerido = (kmActual >= s.km) || (hoy >= fechaLim);
+    if(!requerido) return;
+    const sel = document.querySelector('.selRealizado[data-num="'+s.num+'"]');
+    const inputFecha = document.querySelector('.inputFecha[data-num="'+s.num+'"]');
+    const realizado = sel && sel.value === 'si';
+    const fechaReal = inputFecha && inputFecha.value ? new Date(inputFecha.value) : null;
+    // Si la fecha límite ya pasó y no se realizó -> anula
+    if(hoy > fechaLim && !realizado){
+      anulada = true;
+      mensajes.push(`Falta ${s.num}º servicio cuya fecha límite (${formatDate(fechaLim)}) ya pasó. Omisión anula la garantía.`);
+    } else {
+      // Si se registró pero la fecha de registro es posterior a la fecha límite, aún se considera realizado pero puede requerir revisión
+      if(realizado && fechaReal && fechaReal > fechaLim){
+        mensajes.push(`${s.num}º servicio registrado en fecha ${formatDate(fechaReal)} (posterior a la fecha límite ${formatDate(fechaLim)}).`);
+      } else if(realizado){
+        mensajes.push(`${s.num}º servicio registrado en fecha ${formatDate(fechaReal)}.`);
+      } else {
+        // requerido pero aún no vencido
+        mensajes.push(`${s.num}º servicio requerido; pendiente (fecha límite ${formatDate(fechaLim)}).`);
+      }
+    }
+  });
+
+  // Vigencia por km o fecha
+  const vigFecha = addMonths(fechaFactura, 36);
+  if(new Date() > vigFecha) { anulada = true; mensajes.unshift(`La garantía por tiempo venció el ${formatDate(vigFecha)}.`); }
+  if(kmActual > 33000) { anulada = true; mensajes.unshift(`La garantía por kilometraje fue excedida (${kmActual} > 33,000 km).`); }
+
+  const out = $('evaluacion');
+  out.innerHTML = '';
+  const status = document.createElement('div');
+  status.style.padding = '10px'; status.style.borderRadius = '8px';
+  if(anulada){
+    status.style.background = '#fdecea'; status.style.color = '#b71c1c'; status.innerHTML = '<strong>Garantía anulada</strong>';
+  } else {
+    status.style.background = '#e8f5e9'; status.style.color = '#2e7d32'; status.innerHTML = '<strong>Garantía vigente (por ahora)</strong>';
+  }
+  out.appendChild(status);
+  const ul = document.createElement('ul'); ul.style.marginTop='8px';
+  mensajes.forEach(m => { const li = document.createElement('li'); li.textContent = m; ul.appendChild(li); });
+  out.appendChild(ul);
+});
+
+// Reset
+$('btnReset').addEventListener('click', () => {
+  if(confirm('Limpiar formulario y resultados?')){
+    $('fechaFactura').value=''; $('kmActual').value='0'; resultadoWrap.style.display='none'; vigenciaText.textContent='—';
+  }
+});
 </script>
 </body>
 </html>
