@@ -3,91 +3,105 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Calculadora VENTO — Dashboard</title>
+<title>Calculadora VENTO — Dashboard con Alertas</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f4f6f9; --card:#ffffff; --muted:#6b7280; --accent:#0f6cff;
-  --accent-2:#f28f17; --success:#16a34a; --danger:#dc2626; --glass: rgba(255,255,255,0.6);
-  --radius:12px; --shadow: 0 8px 30px rgba(15,20,30,0.06);
+  --bg:#0f1724; --panel:#071227; --card:#0b1220; --muted:#9aa4b2; --accent:#0f6cff;
+  --accent-2:#f28f17; --success:#16a34a; --danger:#ef4444; --warn:#f59e0b;
+  --radius:12px; --shadow: 0 10px 30px rgba(2,6,23,0.6);
 }
 *{box-sizing:border-box}
-body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; background:linear-gradient(180deg,#eef2ff 0%,var(--bg) 100%); color:#0f1724;}
-.app{max-width:1100px;margin:28px auto;padding:20px;}
+body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; background:linear-gradient(180deg,#071028 0%, #071827 60%); color:#e6eef8;}
+.app{max-width:1200px;margin:28px auto;padding:20px;}
 .header{display:flex;gap:16px;align-items:center;margin-bottom:18px;}
-.brand{display:flex;flex-direction:column;}
+.logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#2b8cff);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:18px;box-shadow:0 8px 30px rgba(15,108,255,0.18);}
 .title{font-size:20px;font-weight:700;margin:0;}
 .subtitle{font-size:13px;color:var(--muted);margin-top:4px;}
 .controls{display:flex;gap:10px;align-items:center;margin-left:auto;}
-.input,select,button{padding:10px 12px;border-radius:10px;border:1px solid #e6e9ef;background:var(--card);font-size:14px;}
-.input[type="number"]{width:120px;}
-.btn-primary{background:linear-gradient(90deg,var(--accent),#2b8cff);color:#fff;border:0;cursor:pointer;box-shadow:0 6px 18px rgba(15,108,255,0.12);}
-.btn-ghost{background:transparent;border:1px solid #e6e9ef;color:var(--muted);cursor:pointer;}
-.grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px;}
-.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;}
-.table-wrap{overflow:auto;}
-table{width:100%;border-collapse:collapse;font-size:14px;}
-th,td{padding:10px;border-bottom:1px solid #f1f3f7;text-align:left;vertical-align:middle;}
-th{font-weight:600;color:var(--muted);font-size:13px;background:transparent;position:sticky;top:0;}
-.row-required{background:linear-gradient(90deg, rgba(242,143,23,0.06), transparent);}
-.row-done{background:linear-gradient(90deg, rgba(22,163,74,0.06), transparent);}
-.row-bad{background:linear-gradient(90deg, rgba(220,38,38,0.06), transparent);}
-.small{font-size:13px;color:var(--muted);}
-.kpi{display:flex;gap:10px;align-items:center;margin-bottom:12px;}
-.kpi .item{flex:1;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.6),#fff);box-shadow:0 6px 18px rgba(15,20,30,0.03);text-align:center;}
-.kpi .value{font-weight:700;font-size:18px;}
-.status-pill{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:700;color:#fff;font-size:13px;}
-.status-ok{background:var(--success);}
-.status-bad{background:var(--danger);}
-.controls-compact{display:flex;gap:8px;align-items:center;}
-.msg{font-size:13px;color:var(--muted);margin-top:8px;}
-.footer-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;}
-.icon{width:18px;height:18px;display:inline-block;vertical-align:middle;margin-right:6px;opacity:0.9;}
-input[type="checkbox"]{width:18px;height:18px;}
-td .inp{width:100%;padding:8px;border-radius:8px;border:1px solid #eef2f6;font-size:13px;}
-@media (max-width:980px){ .grid{grid-template-columns:1fr; } .controls{flex-wrap:wrap;} }
+.input,select,button{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:14px;}
+.input[type="number"]{width:140px;}
+.btn-primary{background:linear-gradient(90deg,var(--accent),#2b8cff);color:#fff;border:0;cursor:pointer;padding:10px 14px;border-radius:10px;font-weight:700;box-shadow:0 8px 24px rgba(15,108,255,0.12);}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);cursor:pointer;padding:9px 12px;border-radius:10px;}
+.grid{display:grid;grid-template-columns:1fr 380px;gap:18px;margin-top:18px;}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;border:1px solid rgba(255,255,255,0.03);}
+.kpi{display:flex;gap:12px;align-items:center;margin-bottom:12px;}
+.kpi .item{flex:1;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);text-align:center;}
+.kpi .label{font-size:12px;color:var(--muted)}
+.kpi .value{font-weight:700;font-size:18px;margin-top:6px}
+.table-wrap{overflow:auto;border-radius:10px;margin-top:8px}
+table{width:100%;border-collapse:collapse;font-size:14px;color:#dbeafe}
+th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:left;vertical-align:middle}
+th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;background:transparent}
+.row-required{background:linear-gradient(90deg, rgba(242,143,23,0.06), transparent)}
+.row-done{background:linear-gradient(90deg, rgba(16,185,129,0.06), transparent)}
+.row-bad{background:linear-gradient(90deg, rgba(239,68,68,0.06), transparent)}
+.small{font-size:13px;color:var(--muted)}
+.inp{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+.msgCell{font-size:13px;color:var(--muted)}
+.status-pill{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:700;color:#071827;font-size:13px}
+.status-ok{background:var(--success)}
+.status-bad{background:var(--danger)}
+.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.footer-note{margin-top:12px;font-size:13px;color:var(--muted)}
+.banner{display:flex;gap:12px;align-items:center;padding:12px;border-radius:10px;margin-bottom:12px;background:linear-gradient(90deg, rgba(239,68,68,0.12), rgba(239,68,68,0.04));border:1px solid rgba(239,68,68,0.12);color:#ffecec}
+.banner.hidden{display:none}
+.alert-list{max-height:220px;overflow:auto;margin-top:8px;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02)}
+.alert-item{padding:8px;border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
+.audit-log{max-height:180px;overflow:auto;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02);margin-top:8px}
+.modal{position:fixed;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);z-index:60}
+.modal-card{width:720px;background:#071827;padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
+.hidden{display:none}
+.btn-danger{background:linear-gradient(90deg,var(--danger),#f43f5e);color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+.row-actions{display:flex;gap:8px;align-items:center}
+.tooltip{position:relative}
+.tooltip:hover::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#071827;color:#e6eef8;padding:8px;border-radius:8px;font-size:12px;white-space:nowrap;box-shadow:0 8px 24px rgba(2,6,23,0.6)}
+@media (max-width:980px){ .grid{grid-template-columns:1fr} .controls{flex-wrap:wrap} .modal-card{width:92%} }
 </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
-    <div class="brand">
+    <div class="logo">V</div>
+    <div>
       <h1 class="title">Calculadora VENTO</h1>
-      <div class="subtitle">Vista tipo calculadora — todos los servicios, validaciones y estado de garantía</div>
+      <div class="subtitle">Dashboard con alertas, auditoría y generación de tickets</div>
     </div>
 
     <div class="controls">
       <label class="small">Fecha factura
-        <input id="fechaFactura" class="input" type="date">
+        <input id="fechaFactura" class="input" type="date" />
       </label>
       <label class="small">Km actual
-        <input id="kmActual" class="input" type="number" min="0" value="0">
+        <input id="kmActual" class="input" type="number" min="0" value="0" />
       </label>
-      <div class="controls-compact">
+      <div style="display:flex;gap:8px;align-items:center">
         <button id="btnCalc" class="btn-primary">Calcular</button>
         <button id="btnReset" class="btn-ghost">Limpiar</button>
       </div>
     </div>
   </div>
 
+  <div id="globalAlertBanner" class="banner hidden" role="status" aria-live="assertive"></div>
+
   <div class="grid">
     <div class="card">
       <div class="kpi">
         <div class="item">
-          <div class="small">Estado de garantía</div>
+          <div class="label">Estado de garantía</div>
           <div id="warrantyBadge" class="status-pill status-ok">—</div>
         </div>
         <div class="item">
-          <div class="small">Servicios requeridos</div>
+          <div class="label">Servicios requeridos</div>
           <div id="requiredCount" class="value">0</div>
         </div>
         <div class="item">
-          <div class="small">Servicios pendientes</div>
+          <div class="label">Pendientes</div>
           <div id="pendingCount" class="value">0</div>
         </div>
       </div>
 
-      <div class="table-wrap">
+      <div class="table-wrap" role="region" aria-label="Tabla de servicios">
         <table id="svcTable" aria-live="polite">
           <thead>
             <tr>
@@ -100,41 +114,75 @@ td .inp{width:100%;padding:8px;border-radius:8px;border:1px solid #eef2f6;font-s
               <th>Fecha realizado</th>
               <th>Km realizado</th>
               <th>Estado</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
       </div>
 
-      <div class="footer-actions">
-        <button id="btnExport" class="btn-ghost">Exportar CSV</button>
-        <button id="btnSave" class="btn-primary">Guardar</button>
+      <div class="actions">
+        <button id="btnExport" class="btn-ghost tooltip" data-tip="Descargar CSV de la tabla">Exportar CSV</button>
+        <button id="btnSave" class="btn-primary tooltip" data-tip="Guardar en este equipo">Guardar</button>
       </div>
-      <div id="msgArea" class="msg"></div>
+
+      <div id="msgArea" class="footer-note"></div>
+
+      <div style="margin-top:12px">
+        <div class="small">Registro de auditoría</div>
+        <div id="auditLog" class="audit-log"></div>
+      </div>
     </div>
 
-    <aside class="card">
+    <aside class="card" aria-live="polite">
       <div class="small">Resumen</div>
       <div style="margin-top:10px">
-        <div><strong>Vigencia:</strong> <span id="vigenciaInfo">—</span></div>
-        <div style="margin-top:8px"><strong>Motivos de anulación</strong></div>
-        <div id="reasons" class="small" style="margin-top:6px;color:var(--danger)"></div>
+        <div><strong>Vigencia</strong> <div id="vigenciaInfo" class="small" style="margin-top:6px">—</div></div>
+        <div style="margin-top:12px"><strong>Motivos de anulación</strong></div>
+        <div id="reasons" class="small" style="margin-top:8px;color:var(--danger)"></div>
       </div>
 
-      <hr style="margin:12px 0;border:none;border-top:1px solid #f1f3f7">
+      <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
 
-      <div class="small">Acciones rápidas</div>
-      <div style="margin-top:8px;display:flex;gap:8px;flex-direction:column">
-        <button id="btnMarkAllDone" class="btn-primary">Marcar todos como realizados</button>
-        <button id="btnClearDone" class="btn-ghost">Limpiar realizados</button>
+      <div class="small">Alertas recientes</div>
+      <div id="alertList" class="alert-list"></div>
+
+      <div style="margin-top:12px">
+        <div class="small">Acciones rápidas</div>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-direction:column">
+          <button id="btnMarkAllDone" class="btn-primary">Marcar todos realizados</button>
+          <button id="btnClearDone" class="btn-ghost">Limpiar realizados</button>
+          <button id="btnGenerateTicket" class="btn-danger">Generar ticket de revisión</button>
+        </div>
       </div>
-      <div style="margin-top:12px" class="small">Los cambios se guardan automáticamente en tu navegador.</div>
+
+      <div style="margin-top:12px" class="small">Guardado automático en tu navegador. Exporta para compartir.</div>
     </aside>
   </div>
 </div>
 
+<!-- Modal: Ticket / Revisión -->
+<div id="modalTicket" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-card">
+    <h3 id="modalTitle">Generar ticket de revisión</h3>
+    <div class="small" style="margin-top:8px">Revisa los motivos y completa la información para crear el reporte.</div>
+    <div style="margin-top:12px">
+      <label class="small">Asignar a
+        <input id="ticketAssignee" class="inp" type="text" placeholder="Nombre o departamento">
+      </label>
+      <label class="small" style="margin-top:8px">Comentarios
+        <textarea id="ticketComments" class="inp" rows="3" placeholder="Observaciones y pasos recomendados"></textarea>
+      </label>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+      <button id="btnTicketCancel" class="btn-ghost">Cancelar</button>
+      <button id="btnTicketCreate" class="btn-primary">Crear ticket y exportar</button>
+    </div>
+  </div>
+</div>
+
 <script>
-/* Datos de servicio (misma lógica que tu calculadora original) */
+/* Datos de servicio */
 const SERVICES = [
   {num:1, km:300, months:1},{num:2, km:2000, months:3},{num:3, km:4000, months:6},
   {num:4, km:6000, months:9},{num:5, km:9000, months:12},{num:6, km:12000, months:15},
@@ -150,11 +198,14 @@ const fmt = d => d ? new Date(d).toLocaleDateString('es-MX') : '-';
 
 let invoiceDate = null;
 let kmActual = 0;
-let state = []; // {num, required, done, fecha, km}
+let state = []; // {num, kmLimit, months, fechaLimit, required, done, fecha, km}
+window.alerts = []; // alert objects
+const STORAGE_KEY = 'vento_calc_alerts_v1';
+const ALERTS_KEY = 'vento_alerts_v1';
+const AUDIT_KEY = 'vento_audit_v1';
 
-/* --- Persistence --- */
-const STORAGE_KEY = 'vento_calc_v1';
-function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify({invoiceDate, kmActual, state})); $('msgArea').textContent = 'Guardado localmente.'; setTimeout(()=>$('msgArea').textContent='',1200); }
+/* Persistence */
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify({invoiceDate, kmActual, state})); appendAudit('Guardado local'); $('msgArea').textContent = 'Guardado local.'; setTimeout(()=>$('msgArea').textContent='',1200); }
 function loadState(){
   const raw = localStorage.getItem(STORAGE_KEY);
   if(!raw) return false;
@@ -163,13 +214,35 @@ function loadState(){
     invoiceDate = obj.invoiceDate; kmActual = obj.kmActual; state = obj.state || [];
     $('fechaFactura').value = invoiceDate || '';
     $('kmActual').value = kmActual || 0;
-    renderTable();
-    recomputeSummary();
+    renderTable(); recomputeSummary();
+    loadAlerts();
+    renderAuditList();
     return true;
   }catch(e){ return false; }
 }
 
-/* --- Build / render --- */
+/* Alerts persistence */
+function saveAlerts(){ localStorage.setItem(ALERTS_KEY, JSON.stringify(window.alerts || [])); renderAlertList(); renderAlertsBanner(); }
+function loadAlerts(){ window.alerts = JSON.parse(localStorage.getItem(ALERTS_KEY) || '[]'); renderAlertList(); renderAlertsBanner(); }
+
+/* Audit */
+function appendAudit(message){
+  const audits = JSON.parse(localStorage.getItem(AUDIT_KEY) || '[]');
+  audits.unshift({ts: new Date().toISOString(), user: 'Asesor', message});
+  localStorage.setItem(AUDIT_KEY, JSON.stringify(audits));
+  renderAuditList();
+}
+function renderAuditList(){
+  const audits = JSON.parse(localStorage.getItem(AUDIT_KEY) || '[]');
+  const el = $('auditLog'); el.innerHTML = '';
+  audits.slice(0,50).forEach(a => {
+    const d = document.createElement('div'); d.className='small'; d.style.marginBottom='6px';
+    d.textContent = `${new Date(a.ts).toLocaleString()} — ${a.user}: ${a.message}`;
+    el.appendChild(d);
+  });
+}
+
+/* UI actions */
 $('btnCalc').addEventListener('click', () => {
   invoiceDate = $('fechaFactura').value;
   kmActual = Number($('kmActual').value || 0);
@@ -183,9 +256,11 @@ $('btnCalc').addEventListener('click', () => {
 $('btnReset').addEventListener('click', () => {
   if(!confirm('Limpiar todo y reiniciar?')) return;
   localStorage.removeItem(STORAGE_KEY);
-  invoiceDate = null; kmActual = 0; state = [];
+  localStorage.removeItem(ALERTS_KEY);
+  localStorage.removeItem(AUDIT_KEY);
+  invoiceDate = null; kmActual = 0; state = []; window.alerts = [];
   $('fechaFactura').value=''; $('kmActual').value='0';
-  tbody.innerHTML=''; recomputeSummary();
+  tbody.innerHTML=''; recomputeSummary(); renderAlertList(); renderAuditList(); renderAlertsBanner();
 });
 
 $('btnSave').addEventListener('click', saveState);
@@ -193,17 +268,23 @@ $('btnMarkAllDone').addEventListener('click', () => { state.forEach(s=>{ s.done=
 $('btnClearDone').addEventListener('click', () => { state.forEach(s=>{ s.done=false; s.fecha=''; s.km=''; }); renderTable(); recomputeSummary(); saveState(); });
 
 $('btnExport').addEventListener('click', () => {
-  const rows = [['Servicio','Km límite','Meses','Fecha límite','Requerido','Realizado','Fecha realizado','Km realizado']];
-  state.forEach(s=>{
-    rows.push([s.num, s.kmLimit, s.months, s.fechaLimit, s.required ? 'Sí':'No', s.done ? 'Sí':'No', s.fecha || '', s.km || '']);
-  });
+  const rows = [['Servicio','Km límite','Meses','Fecha límite','Requerido','Realizado','Fecha realizado','Km realizado','Estado']];
+  state.forEach(s=> rows.push([s.num, s.kmLimit, s.months, fmt(s.fechaLimit), s.required ? 'Sí':'No', s.done ? 'Sí':'No', s.fecha || '', s.km || '', getRowStateText(s)]));
   const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'vento_servicios.csv'; a.click(); URL.revokeObjectURL(url);
+  const a = document.createElement('a'); a.href = url; a.download = 'vento_servicios_alertas.csv'; a.click(); URL.revokeObjectURL(url);
+  appendAudit('Exportado CSV de servicios');
 });
 
-/* Initialize state from SERVICES and invoiceDate */
+/* Ticket modal */
+$('btnGenerateTicket').addEventListener('click', () => {
+  openTicketModal();
+});
+$('btnTicketCancel').addEventListener('click', closeTicketModal);
+$('btnTicketCreate').addEventListener('click', createTicket);
+
+/* Initialize state */
 function initState(){
   state = SERVICES.map(s => {
     const fechaLimit = addMonths(invoiceDate, s.months);
@@ -212,13 +293,12 @@ function initState(){
   });
 }
 
-/* Render table rows with inputs and handlers */
+/* Render table */
 function renderTable(){
   tbody.innerHTML = '';
-  state.forEach((s, idx) => {
+  state.forEach(s => {
     const tr = document.createElement('tr');
     tr.dataset.num = s.num;
-    // row class
     if(s.done) tr.classList.add('row-done');
     else if(s.required) tr.classList.add('row-required');
 
@@ -236,16 +316,20 @@ function renderTable(){
       </td>
       <td><input class="inp inpDate" type="date" value="${s.fecha || ''}" ${s.done ? '' : 'disabled'}></td>
       <td><input class="inp inpKm" type="number" min="0" value="${s.km || ''}" ${s.done ? '' : 'disabled'}></td>
-      <td class="small msgCell"></td>
+      <td class="msgCell small"></td>
+      <td class="small"><div class="row-actions">
+        <button class="btn-ghost btnRowReview">Solicitar revisión</button>
+        <button class="btn-ghost btnRowEvidence">Adjuntar evidencia</button>
+      </div></td>
     `;
     tbody.appendChild(tr);
 
-    // handlers
     const chkReq = tr.querySelector('.chkReq');
     const selDone = tr.querySelector('.selDone');
     const inpDate = tr.querySelector('.inpDate');
     const inpKm = tr.querySelector('.inpKm');
-    const msgCell = tr.querySelector('.msgCell');
+    const btnReview = tr.querySelector('.btnRowReview');
+    const btnEvidence = tr.querySelector('.btnRowEvidence');
 
     chkReq.addEventListener('change', () => { s.required = chkReq.checked; recomputeSummary(); saveState(); renderRowState(tr,s); });
     selDone.addEventListener('change', () => {
@@ -257,12 +341,22 @@ function renderTable(){
     inpDate.addEventListener('change', () => { s.fecha = inpDate.value; validateRow(tr,s); recomputeSummary(); saveState(); });
     inpKm.addEventListener('input', () => { s.km = inpKm.value; validateRow(tr,s); recomputeSummary(); saveState(); });
 
-    // initial validation
+    btnReview.addEventListener('click', () => {
+      pushAlert('Solicitud de revisión','Alta', s.num, `Revisión solicitada manualmente por asesor para servicio ${s.num}`);
+      openTicketModal(`Revisión servicio ${s.num}`, `Servicio ${s.num}: revisar estado y evidencias.`);
+    });
+
+    btnEvidence.addEventListener('click', () => {
+      pushAlert('Evidencia adjunta','Media', s.num, `Evidencia adjunta por asesor para servicio ${s.num}`);
+      appendAudit(`Evidencia adjunta para servicio ${s.num}`);
+      alert('Marca de evidencia registrada en el sistema (simulado).');
+    });
+
     renderRowState(tr,s);
   });
 }
 
-/* Visual per-row update */
+/* Row visuals and validation */
 function renderRowState(tr,s){
   tr.classList.remove('row-done','row-bad','row-required');
   if(s.done) tr.classList.add('row-done');
@@ -270,7 +364,13 @@ function renderRowState(tr,s){
   validateRow(tr,s);
 }
 
-/* Row validation rules */
+function getLastRecordedKmBefore(num){
+  // find highest km among services with num < given and done
+  const prev = state.filter(x => x.num < num && x.km).map(x => Number(x.km));
+  if(prev.length === 0) return null;
+  return Math.max(...prev);
+}
+
 function validateRow(tr,s){
   const msgCell = tr.querySelector('.msgCell');
   msgCell.textContent = '';
@@ -280,16 +380,31 @@ function validateRow(tr,s){
     if(!s.fecha){ msgCell.textContent = 'Ingresa fecha'; tr.classList.add('row-bad'); return false; }
     if(new Date(s.fecha) < new Date(invoiceDate)){ msgCell.textContent = 'Fecha < fecha factura'; tr.classList.add('row-bad'); return false; }
     if(!s.km || Number(s.km) <= 0){ msgCell.textContent = 'Ingresa km válido'; tr.classList.add('row-bad'); return false; }
-    // if required by km but km entered is less than limit -> warn but allow
-    if(Number(s.km) < s.kmLimit && kmActual >= s.kmLimit){ msgCell.textContent = `Km < límite (${s.kmLimit.toLocaleString()}) — revisar`; tr.classList.add('row-bad'); return true; }
+    const lastKm = getLastRecordedKmBefore(s.num);
+    if(lastKm && Number(s.km) < lastKm){
+      msgCell.textContent = `Km < último registrado (${lastKm}) — inconsistencia`;
+      tr.classList.add('row-bad');
+      pushAlert('Inconsistencia de km','Media', s.num, `Km ingresado ${s.km} < último km registrado ${lastKm}`);
+      return false;
+    }
+    const fechaLim = new Date(s.fechaLimit);
+    const lateByDate = new Date(s.fecha) > fechaLim;
+    const lateByKm = Number(s.km) < s.kmLimit && kmActual >= s.kmLimit ? false : false;
+    if(lateByDate || lateByKm){
+      msgCell.textContent = 'Registrado (fuera de plazo)';
+      pushAlert('Realizado fuera de plazo','Media', s.num, `Registrado ${s.fecha} · ${s.km} km (fuera de plazo)`);
+      return true;
+    }
     msgCell.textContent = 'Registrado';
     return true;
   } else {
-    // not done
-    const overdueByDate = new Date() > new Date(s.fechaLimit);
-    if(s.required && overdueByDate){
-      msgCell.textContent = 'Requerido y NO realizado — puede anular garantía';
+    const fechaLim = new Date(s.fechaLimit);
+    const overdueByDate = new Date() > fechaLim;
+    const overdueByKm = kmActual >= s.kmLimit;
+    if(s.required && (overdueByDate || overdueByKm)){
+      msgCell.textContent = 'Requerido y NO realizado — riesgo de anulación';
       tr.classList.add('row-bad');
+      pushAlert('Requerido y no realizado','Alta', s.num, `Servicio ${s.num} requerido y no realizado. Fecha límite ${fmt(s.fechaLimit)} · Km límite ${s.kmLimit.toLocaleString()}`);
       return false;
     }
     msgCell.textContent = s.required ? 'Requerido' : '';
@@ -297,7 +412,59 @@ function validateRow(tr,s){
   }
 }
 
+/* Alerts management */
+function pushAlert(type, severity, serviceNum, details){
+  const alert = {
+    id: `A-${Date.now()}-${Math.floor(Math.random()*999)}`,
+    type, severity, serviceNum,
+    details, createdAt: new Date().toISOString(),
+    read: false
+  };
+  window.alerts.unshift(alert);
+  saveAlerts();
+  appendAudit(`Alerta creada: ${type} (servicio ${serviceNum})`);
+  return alert;
+}
+
+function renderAlertList(){
+  const el = $('alertList'); el.innerHTML = '';
+  window.alerts.slice(0,50).forEach(a => {
+    const div = document.createElement('div'); div.className='alert-item';
+    div.innerHTML = `<strong>[${a.severity}]</strong> Servicio ${a.serviceNum} — ${a.type}<div class="small" style="margin-top:6px">${a.details}</div><div class="small" style="margin-top:6px;color:var(--muted)">${new Date(a.createdAt).toLocaleString()}</div>`;
+    el.appendChild(div);
+  });
+}
+
+function renderAlertsBanner(){
+  const banner = $('globalAlertBanner');
+  const high = (window.alerts || []).filter(a => a.severity === 'Alta');
+  if(high.length){
+    banner.classList.remove('hidden');
+    banner.innerHTML = `<strong>ALERTAS CRÍTICAS:</strong> ${high.length} casos. <button id="btnBannerTicket" class="btn-primary" style="margin-left:12px">Generar ticket de revisión</button>`;
+    // attach handler
+    setTimeout(()=>{ const b = $('btnBannerTicket'); if(b) b.addEventListener('click', openTicketModal); }, 50);
+  } else {
+    banner.classList.add('hidden');
+  }
+}
+
 /* Summary evaluation */
+function getRowStateText(s){
+  if(s.done){
+    const fechaLim = new Date(s.fechaLimit);
+    const lateByDate = new Date(s.fecha) > fechaLim;
+    if(lateByDate) return 'Registrado (fuera de plazo)';
+    return 'Registrado';
+  } else {
+    const fechaLim = new Date(s.fechaLimit);
+    const overdueByDate = new Date() > fechaLim;
+    const overdueByKm = kmActual >= s.kmLimit;
+    if(s.required && (overdueByDate || overdueByKm)) return 'Requerido y NO realizado (vencido)';
+    if(s.required) return 'Requerido';
+    return 'No requerido';
+  }
+}
+
 function recomputeSummary(){
   if(!invoiceDate){ $('warrantyBadge').textContent='—'; $('requiredCount').textContent='0'; $('pendingCount').textContent='0'; $('vigenciaInfo').textContent='—'; $('reasons').textContent=''; return; }
   const vigDate = addMonths(invoiceDate,36);
@@ -326,25 +493,63 @@ function recomputeSummary(){
   }
 }
 
-/* On load: try to restore */
+/* Ticket modal helpers */
+function openTicketModal(title, defaultComment){
+  $('modalTicket').classList.remove('hidden');
+  if(title) $('modalTitle').textContent = title;
+  if(defaultComment) $('ticketComments').value = defaultComment;
+  else $('ticketComments').value = '';
+  $('ticketAssignee').value = '';
+}
+function closeTicketModal(){ $('modalTicket').classList.add('hidden'); }
+
+function createTicket(){
+  // collect alerts and reasons
+  const alerts = window.alerts.slice(0,50);
+  const ticket = {
+    id: `T-${Date.now()}`,
+    createdAt: new Date().toISOString(),
+    assignee: $('ticketAssignee').value || 'Sin asignar',
+    comments: $('ticketComments').value || '',
+    invoiceDate, kmActual,
+    services: state.map(s => ({num:s.num, required:s.required, done:s.done, fecha:s.fecha, km:s.km, estado:getRowStateText(s)})),
+    alerts
+  };
+  // export ticket as JSON/CSV (here CSV summary)
+  const rows = [
+    ['Ticket ID', ticket.id],
+    ['Creado', new Date(ticket.createdAt).toLocaleString()],
+    ['Asignado a', ticket.assignee],
+    ['Comentarios', ticket.comments],
+    ['Fecha factura', invoiceDate],
+    ['Km actual', kmActual],
+    [],
+    ['Servicios:'],
+    ['Servicio','Km límite','Meses','Fecha límite','Requerido','Realizado','Fecha realizado','Km realizado','Estado']
+  ];
+  ticket.services.forEach(s => rows.push([s.num, state.find(x=>x.num===s.num).kmLimit, state.find(x=>x.num===s.num).months, fmt(state.find(x=>x.num===s.num).fechaLimit), s.required ? 'Sí':'No', s.done ? 'Sí':'No', s.fecha || '', s.km || '', s.estado]));
+  const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = `${ticket.id}_revisión.csv`; a.click(); URL.revokeObjectURL(url);
+
+  appendAudit(`Ticket ${ticket.id} creado y exportado. Asignado a ${ticket.assignee}`);
+  pushAlert('Ticket creado','Alta','-', `Ticket ${ticket.id} creado por asesor. Asignado a ${ticket.assignee}`);
+  closeTicketModal();
+  alert('Ticket creado y exportado (archivo CSV).');
+}
+
+/* Load on start */
 window.addEventListener('load', () => {
   if(!loadState()){
-    // prefill with defaults if none
     $('fechaFactura').value = '';
     $('kmActual').value = '0';
+    renderAuditList();
+    loadAlerts();
+  } else {
+    kmActual = Number($('kmActual').value || 0);
   }
 });
-
-/* Helper: validate all rows before saving/export */
-function validateAll(){
-  let ok = true;
-  document.querySelectorAll('#svcTable tbody tr').forEach(tr => {
-    const num = Number(tr.dataset.num);
-    const s = state.find(x=>x.num===num);
-    if(!validateRow(tr,s)) ok = false;
-  });
-  return ok;
-}
 </script>
 </body>
 </html>
