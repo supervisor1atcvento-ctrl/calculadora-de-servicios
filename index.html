@@ -3,305 +3,209 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Calculadora secuencial de servicios VENTO</title>
+<title>Calculadora VENTO - Vista tipo Excel</title>
 <style>
-  :root{
-    --bg:#FFFFFF; --text:#231F20; --muted:#616160; --accent:#F28F17;
-    --radius:10px; --shadow: 0 6px 18px rgba(35,31,32,0.06);
-  }
-  body{font-family:"Segoe UI", Roboto, Arial, sans-serif;background:var(--bg);color:var(--text);margin:20px;}
-  .wrap{max-width:820px;margin:0 auto;}
-  h1{font-size:28px;margin:0 0 6px;font-weight:700;}
-  p.lead{color:var(--muted);margin:0 0 14px;}
-  .card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:12px;}
-  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;}
-  input[type="date"], input[type="number"], input[type="text"], select{width:100%;padding:10px;border:1px solid #e9e9e9;border-radius:8px;font-size:15px;margin-bottom:10px;}
-  button{background:var(--accent);color:#fff;border:0;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700;}
-  .btn-ghost{background:transparent;border:1px solid #eee;color:var(--text);padding:8px 12px;border-radius:8px;cursor:pointer;}
-  .muted{color:var(--muted);font-size:13px;}
-  .status{padding:10px;border-radius:8px;margin-top:8px;}
-  .ok{background:#e8f5e9;color:#2e7d32;}
-  .warn{background:#fff7e6;color:#7a4b00;}
-  .bad{background:#fdecea;color:#b71c1c;}
-  .row{display:flex;gap:8px;align-items:center;}
-  .right{margin-left:auto;}
-  .hidden{display:none;}
-  .small{font-size:13px;color:var(--muted);}
+:root{--accent:#F28F17;--muted:#616160;--ok:#e8f5e9;--bad:#fdecea;}
+body{font-family:Segoe UI, Roboto, Arial; margin:18px; color:#231f20;}
+.container{max-width:980px;margin:0 auto;}
+h1{font-size:20px;margin-bottom:6px;}
+.controls{display:flex;gap:8px;align-items:center;margin-bottom:12px;}
+input,select,button{padding:8px;border-radius:6px;border:1px solid #e9e9e9;}
+table{width:100%;border-collapse:collapse;margin-top:8px;}
+th,td{padding:8px;border:1px solid #eee;text-align:left;font-size:14px;}
+th{background:#fafafa;}
+.row-ok{background:var(--ok);}
+.row-bad{background:var(--bad);}
+.small{font-size:13px;color:var(--muted);}
+.status{padding:10px;border-radius:8px;margin-top:8px;}
+.btn{background:var(--accent);color:#fff;border:0;padding:8px 10px;border-radius:6px;cursor:pointer;}
+.summary{margin-top:12px;padding:10px;border-radius:8px;border:1px solid #eee;}
+.badge{font-weight:700;color:#fff;background:#444;padding:4px 8px;border-radius:6px;}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>Calculadora secuencial de servicios VENTO</h1>
-  <p class="lead">Introduce la fecha de factura y el km actual. La calculadora mostrará solo los servicios que se requieren y te guiará uno por uno.</p>
+<div class="container">
+  <h1>Calculadora VENTO - Vista tipo Excel</h1>
+  <div class="small">Pega la fecha de factura y el km actual; la tabla calculará qué servicios aplican.</div>
 
-  <div class="card" id="inputCard">
-    <label for="fechaFactura">Fecha de factura</label>
-    <input id="fechaFactura" type="date" />
-
-    <label for="kmActual">Kilometraje actual</label>
-    <input id="kmActual" type="number" min="0" value="0" />
-
-    <div class="row">
-      <button id="btnStart">Iniciar cálculo</button>
-      <button id="btnClear" class="btn-ghost">Limpiar</button>
-      <div class="right small muted" id="vigenciaInfo">—</div>
-    </div>
+  <div class="controls">
+    <label>Fecha factura <input id="fechaFactura" type="date"></label>
+    <label>Km actual <input id="kmActual" type="number" min="0" value="0"></label>
+    <button id="btnCalc" class="btn">Calcular</button>
+    <div style="margin-left:auto" class="small" id="vigenciaInfo">—</div>
   </div>
 
-  <div class="card hidden" id="flowCard" aria-live="polite">
-    <div id="flowHeader" class="small muted">Servicios requeridos (se mostrará uno a la vez)</div>
-    <hr />
-    <div id="currentBlock">
-      <div id="serviceTitle" style="font-weight:700;font-size:18px;margin-bottom:6px;">—</div>
-      <div class="small muted" id="serviceLimits">—</div>
+  <div id="tableWrap" style="display:none">
+    <table id="svcTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Km límite</th>
+          <th>Meses</th>
+          <th>Fecha límite</th>
+          <th>Requerido</th>
+          <th>Realizado</th>
+          <th>Fecha realizado</th>
+          <th>Km realizado</th>
+          <th>Estado / Mensaje</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
 
-      <div style="margin-top:12px;">
-        <label>¿Se realizó este servicio?</label>
-        <select id="selRealizado">
-          <option value="no">No</option>
-          <option value="si">Sí</option>
-        </select>
-      </div>
-
-      <div id="doneFields" class="hidden" style="margin-top:10px;">
-        <label for="fechaRealizado">Fecha de realización</label>
-        <input id="fechaRealizado" type="date" />
-        <label for="kmRealizado">Kilometraje al realizar</label>
-        <input id="kmRealizado" type="number" min="0" />
-        <div class="small muted" style="margin-top:6px;">Nota: el km debe ser mayor o igual al km del servicio anterior realizado.</div>
-      </div>
-
-      <div style="margin-top:12px;display:flex;gap:8px;">
-        <button id="btnNext">Confirmar y continuar</button>
-        <button id="btnStop" class="btn-ghost">Cancelar flujo</button>
-      </div>
-
-      <div id="flowMessage" style="margin-top:12px;"></div>
-    </div>
-
-    <hr />
-    <div class="small muted">Progreso: <span id="progressText">0 / 0</span></div>
-  </div>
-
-  <div id="resultCard" class="card hidden" aria-live="polite">
-    <div id="resultStatus" class="status"></div>
-    <div id="resultDetails" style="margin-top:10px;"></div>
-    <div style="margin-top:12px;">
-      <button id="btnRestart">Nueva consulta</button>
+    <div class="summary" id="summary">
+      <div><span class="badge">Estado:</span> <span id="warrantyStatus">—</span></div>
+      <div class="small" id="summaryDetails"></div>
     </div>
   </div>
 </div>
 
 <script>
-/* Servicios según póliza */
 const SERVICES = [
-  {num:1, km:300, months:1},
-  {num:2, km:2000, months:3},
-  {num:3, km:4000, months:6},
-  {num:4, km:6000, months:9},
-  {num:5, km:9000, months:12},
-  {num:6, km:12000, months:15},
-  {num:7, km:15000, months:18},
-  {num:8, km:18000, months:21},
-  {num:9, km:21000, months:24},
-  {num:10, km:24000, months:27},
-  {num:11, km:27000, months:30},
-  {num:12, km:30000, months:33},
-  {num:13, km:33000, months:36}
+{num:1, km:300, months:1},{num:2, km:2000, months:3},{num:3, km:4000, months:6},
+{num:4, km:6000, months:9},{num:5, km:9000, months:12},{num:6, km:12000, months:15},
+{num:7, km:15000, months:18},{num:8, km:18000, months:21},{num:9, km:21000, months:24},
+{num:10, km:24000, months:27},{num:11, km:27000, months:30},{num:12, km:30000, months:33},
+{num:13, km:33000, months:36}
 ];
 
 const $ = id => document.getElementById(id);
 const addMonths = (dateStr, months) => { const d = new Date(dateStr); d.setMonth(d.getMonth()+months); return d; };
 const fmt = d => d ? new Date(d).toLocaleDateString('es-MX') : '-';
 
-let flowList = []; // servicios requeridos (objetos)
-let flowIndex = 0;
-let invoiceDate = null;
-let kmActual = 0;
-let recordedServices = []; // {num, fecha, km, cesve?}
+$('btnCalc').addEventListener('click', buildTable);
 
-$('btnStart').addEventListener('click', startFlow);
-$('btnClear').addEventListener('click', clearAll);
-$('selRealizado').addEventListener('change', onRealizadoChange);
-$('btnNext').addEventListener('click', onConfirm);
-$('btnStop').addEventListener('click', stopFlow);
-$('btnRestart').addEventListener('click', restart);
-
-function startFlow(){
-  invoiceDate = $('fechaFactura').value;
-  kmActual = Number($('kmActual').value || 0);
+function buildTable(){
+  const invoiceDate = $('fechaFactura').value;
+  let kmActual = Number($('kmActual').value || 0);
   if(!invoiceDate){ alert('Ingresa la fecha de factura'); return; }
-  // vigencia info
+
   const vigDate = addMonths(invoiceDate, 36);
   const vigText = (new Date() > vigDate || kmActual > 33000) ? 'Garantía vencida' : `Válida hasta ${fmt(vigDate)} o 33,000 km`;
   $('vigenciaInfo').textContent = vigText;
 
-  // construir lista de servicios requeridos (solo los que ya aplican por fecha o km)
+  const tbody = document.querySelector('#svcTable tbody');
+  tbody.innerHTML = '';
   const today = new Date();
-  flowList = SERVICES.filter(s => {
+
+  SERVICES.forEach(s => {
     const fechaLim = addMonths(invoiceDate, s.months);
-    return (kmActual >= s.km) || (today >= fechaLim);
+    const requiredByKm = kmActual >= s.km;
+    const requiredByDate = today >= fechaLim;
+    const required = requiredByKm || requiredByDate;
+
+    const tr = document.createElement('tr');
+    tr.dataset.num = s.num;
+
+    tr.innerHTML = `
+      <td>${s.num}</td>
+      <td>${s.km.toLocaleString()}</td>
+      <td>${s.months}</td>
+      <td>${fmt(fechaLim)}</td>
+      <td><input type="checkbox" class="chkRequired" ${required ? 'checked' : ''}></td>
+      <td><select class="selDone"><option value="no">No</option><option value="si">Sí</option></select></td>
+      <td><input type="date" class="inpDate" disabled></td>
+      <td><input type="number" class="inpKm" min="0" disabled></td>
+      <td class="msg small"></td>
+    `;
+    tbody.appendChild(tr);
   });
 
-  // if none required
-  if(flowList.length === 0){
-    showResult('ok', 'No hay servicios requeridos por ahora. La garantía sigue vigente.', []);
-    return;
-  }
-
-  // initialize
-  flowIndex = 0;
-  recordedServices = [];
-  $('flowCard').classList.remove('hidden');
-  $('resultCard').classList.add('hidden');
-  $('inputCard').classList.add('hidden');
-  updateProgress();
-  renderCurrent();
+  // enable table view
+  $('tableWrap').style.display = 'block';
+  attachRowHandlers(invoiceDate);
+  recomputeSummary(invoiceDate);
 }
 
-function renderCurrent(){
-  const s = flowList[flowIndex];
-  const fechaLim = addMonths(invoiceDate, s.months);
-  $('serviceTitle').textContent = `${s.num}º Servicio`;
-  $('serviceLimits').textContent = `Km límite: ${s.km.toLocaleString()} km · Fecha límite: ${fmt(fechaLim)}`;
-  $('selRealizado').value = 'no';
-  $('doneFields').classList.add('hidden');
-  $('fechaRealizado').value = '';
-  $('kmRealizado').value = '';
-  $('flowMessage').innerHTML = '';
-  updateProgress();
-}
+function attachRowHandlers(invoiceDate){
+  const rows = document.querySelectorAll('#svcTable tbody tr');
+  rows.forEach((tr, idx) => {
+    const selDone = tr.querySelector('.selDone');
+    const inpDate = tr.querySelector('.inpDate');
+    const inpKm = tr.querySelector('.inpKm');
+    const chkReq = tr.querySelector('.chkRequired');
+    const msg = tr.querySelector('.msg');
 
-function updateProgress(){
-  $('progressText').textContent = `${flowIndex + 1} / ${flowList.length}`;
-}
-
-function onRealizadoChange(){
-  const val = $('selRealizado').value;
-  if(val === 'si') $('doneFields').classList.remove('hidden');
-  else $('doneFields').classList.add('hidden');
-}
-
-function onConfirm(){
-  const s = flowList[flowIndex];
-  const fechaLim = addMonths(invoiceDate, s.months);
-  const today = new Date();
-  const requiredByKm = kmActual >= s.km;
-  const requiredByDate = today >= fechaLim;
-  const required = requiredByKm || requiredByDate;
-
-  const realizado = $('selRealizado').value === 'si';
-  if(!required){
-    // shouldn't happen because flowList only contains required, but guard
-    $('flowMessage').innerHTML = `<div class="status warn">Este servicio no está marcado como requerido. Se omite.</div>`;
-    nextOrFinish();
-    return;
-  }
-
-  if(!realizado){
-    // user says No
-    // if service is already overdue by date or km, stop and mark warranty anulada
-    const overdueByKm = kmActual >= s.km; // if current km already >= limit, it's due by km
-    const overdueByDate = today > fechaLim;
-    if(overdueByKm || overdueByDate){
-      // stop flow and show annulment
-      const reasons = [];
-      if(overdueByKm) reasons.push(`Km actual ${kmActual} ≥ km límite ${s.km}`);
-      if(overdueByDate) reasons.push(`Fecha actual ${fmt(today)} > fecha límite ${fmt(fechaLim)}`);
-      showResult('bad', `Servicio ${s.num} requerido y no realizado. La garantía queda anulada.`, reasons.map(r=>`Motivo: ${r}`));
-      return;
-    } else {
-      // not overdue yet: allow continue to next required service
-      recordedServices.push({num:s.num, realizado:false});
-      $('flowMessage').innerHTML = `<div class="status warn">Servicio marcado como no realizado pero aún no vencido. Se continúa con el siguiente servicio.</div>`;
-      setTimeout(nextOrFinish, 900);
-      return;
-    }
-  }
-
-  // realizado === true -> validate fields
-  const fechaReal = $('fechaRealizado').value;
-  const kmReal = Number($('kmRealizado').value || 0);
-  if(!fechaReal || !kmReal){ alert('Ingresa fecha y km del servicio realizado'); return; }
-
-  // validation rules:
-  // 1) fechaReal must be >= invoiceDate
-  if(new Date(fechaReal) < new Date(invoiceDate)){
-    alert('La fecha de realización no puede ser anterior a la fecha de factura.');
-    return;
-  }
-  // 2) kmReal must be >= previous recorded km (if any)
-  const prevDone = recordedServices.slice().reverse().find(r => r.km != null && r.km > 0);
-  if(prevDone && kmReal < prevDone.km){
-    alert('El kilometraje del servicio debe ser mayor o igual al último km registrado para servicios previos.');
-    return;
-  }
-  // 3) kmReal should not be less than service km limit? allow it but warn if less than limit when required by km
-  if(kmReal < s.km && kmActual >= s.km){
-    // required by km but reported km less than limit -> inconsistent
-    if(!confirm('El km ingresado es menor que el km límite que provocó la exigencia del servicio. Deseas registrar de todos modos?')) return;
-  }
-
-  // save record
-  recordedServices.push({num:s.num, realizado:true, fecha:fechaReal, km:kmReal});
-  // update kmActual if kmReal is greater
-  if(kmReal > kmActual) kmActual = kmReal;
-
-  // after successful registration, move to next or finish
-  $('flowMessage').innerHTML = `<div class="status ok">Servicio ${s.num} registrado correctamente.</div>`;
-  setTimeout(nextOrFinish, 700);
-}
-
-function nextOrFinish(){
-  if(flowIndex < flowList.length - 1){
-    flowIndex++;
-    renderCurrent();
-  } else {
-    // finished all required services
-    // evaluate final warranty status: if any required service was overdue and not done -> annulada (should have been caught earlier)
-    const details = recordedServices.map(r => {
-      if(r.realizado) return `Servicio ${r.num}: realizado el ${fmt(r.fecha)} · ${r.km.toLocaleString()} km`;
-      return `Servicio ${r.num}: NO realizado`;
+    selDone.addEventListener('change', () => {
+      const done = selDone.value === 'si';
+      inpDate.disabled = !done;
+      inpKm.disabled = !done;
+      if(!done){ inpDate.value=''; inpKm.value=''; msg.textContent=''; tr.classList.remove('row-bad','row-ok'); }
+      recomputeSummary(invoiceDate);
     });
-    showResult('ok', 'Se completó el flujo de servicios requeridos. Revisa el detalle abajo.', details);
+
+    inpDate.addEventListener('change', () => { validateRow(tr, invoiceDate); recomputeSummary(invoiceDate); });
+    inpKm.addEventListener('input', () => { validateRow(tr, invoiceDate); recomputeSummary(invoiceDate); });
+    chkReq.addEventListener('change', () => { recomputeSummary(invoiceDate); });
+  });
+}
+
+function validateRow(tr, invoiceDate){
+  const num = Number(tr.dataset.num);
+  const svc = SERVICES.find(s=>s.num===num);
+  const selDone = tr.querySelector('.selDone').value === 'si';
+  const inpDate = tr.querySelector('.inpDate').value;
+  const inpKm = Number(tr.querySelector('.inpKm').value || 0);
+  const msg = tr.querySelector('.msg');
+
+  msg.textContent = '';
+  tr.classList.remove('row-bad','row-ok');
+
+  if(selDone){
+    // fecha >= factura
+    if(new Date(inpDate) < new Date(invoiceDate)){ msg.textContent = 'Fecha < fecha factura'; tr.classList.add('row-bad'); return false; }
+    // km >= 0 and basic check vs service km if required by km
+    if(inpKm <= 0){ msg.textContent = 'Ingresa km'; tr.classList.add('row-bad'); return false; }
+    // if km less than service limit but service was required by km, warn (but allow)
+    if(inpKm < svc.km){ msg.textContent = `Km < límite (${svc.km.toLocaleString()}) — confirmar`; tr.classList.add('row-bad'); return true; }
+    tr.classList.add('row-ok');
+    return true;
+  } else {
+    // not done: if required and already overdue -> mark bad
+    const fechaLim = addMonths(invoiceDate, svc.months);
+    const today = new Date();
+    const requiredByDate = today > fechaLim;
+    if(requiredByDate){ msg.textContent = 'Requerido y no realizado — puede anular garantía'; tr.classList.add('row-bad'); return false; }
+    return true;
   }
 }
 
-function stopFlow(){
-  if(confirm('Detener el flujo ahora. ¿Deseas cancelar la consulta?')) {
-    restart();
+function recomputeSummary(invoiceDate){
+  const rows = document.querySelectorAll('#svcTable tbody tr');
+  let anyBad = false;
+  const reasons = [];
+  rows.forEach(tr => {
+    const num = Number(tr.dataset.num);
+    const svc = SERVICES.find(s=>s.num===num);
+    const chkReq = tr.querySelector('.chkRequired').checked;
+    const selDone = tr.querySelector('.selDone').value === 'si';
+    const inpDate = tr.querySelector('.inpDate').value;
+    const inpKm = Number(tr.querySelector('.inpKm').value || 0);
+    const fechaLim = addMonths(invoiceDate, svc.months);
+    const today = new Date();
+
+    if(chkReq && !selDone){
+      // if overdue by date or km -> reason
+      const overdueByDate = today > fechaLim;
+      if(overdueByDate){ anyBad = true; reasons.push(`Servicio ${num} requerido por fecha y no realizado (fecha límite ${fmt(fechaLim)})`); tr.querySelector('.msg').textContent = 'Requerido y NO realizado'; tr.classList.add('row-bad'); }
+    }
+
+    // run per-row validation to set classes/messages
+    validateRow(tr, invoiceDate);
+  });
+
+  const statusEl = $('warrantyStatus');
+  const detailsEl = $('summaryDetails');
+  if(anyBad){
+    statusEl.textContent = 'ANULADA';
+    statusEl.style.color = '#b71c1c';
+    detailsEl.innerHTML = reasons.map(r=>`• ${r}`).join('<br>');
+  } else {
+    statusEl.textContent = 'VIGENTE / OK';
+    statusEl.style.color = '#2e7d32';
+    detailsEl.textContent = 'No hay servicios obligatorios sin registrar que anulen la garantía.';
   }
 }
-
-function showResult(status, title, lines){
-  $('flowCard').classList.add('hidden');
-  $('resultCard').classList.remove('hidden');
-  const statusEl = $('resultStatus');
-  statusEl.className = 'status';
-  if(status === 'ok'){ statusEl.classList.add('ok'); statusEl.textContent = title; }
-  else if(status === 'warn'){ statusEl.classList.add('warn'); statusEl.textContent = title; }
-  else { statusEl.classList.add('bad'); statusEl.textContent = title; }
-  const details = $('resultDetails');
-  details.innerHTML = '';
-  if(lines && lines.length){
-    const ul = document.createElement('ul');
-    lines.forEach(l => { const li = document.createElement('li'); li.textContent = l; ul.appendChild(li); });
-    details.appendChild(ul);
-  }
-  // show input card to allow new query
-  $('inputCard').classList.remove('hidden');
-}
-
-function restart(){
-  // reset everything
-  flowList = []; flowIndex = 0; invoiceDate = null; kmActual = 0; recordedServices = [];
-  $('fechaFactura').value = ''; $('kmActual').value = '0';
-  $('flowCard').classList.add('hidden'); $('resultCard').classList.add('hidden');
-  $('inputCard').classList.remove('hidden');
-  $('vigenciaInfo').textContent = '—';
-}
-
-function clearAll(){ if(confirm('Limpiar formulario?')) restart(); }
 </script>
 </body>
 </html>
