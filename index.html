@@ -44,19 +44,15 @@ th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;backg
 .status-bad{background:var(--danger)}
 .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
 .footer-note{margin-top:12px;font-size:13px;color:var(--muted)}
-.banner{display:flex;gap:12px;align-items:center;padding:12px;border-radius:10px;margin-bottom:12px;background:linear-gradient(90deg, rgba(239,68,68,0.12), rgba(239,68,68,0.04));border:1px solid rgba(239,68,68,0.12);color:#ffecec}
-.banner.hidden{display:none}
 .alert-list{max-height:220px;overflow:auto;margin-top:8px;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02)}
 .alert-item{padding:8px;border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
 .audit-log{max-height:180px;overflow:auto;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02);margin-top:8px}
-.modal{position:fixed;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);z-index:60}
-.modal-card{width:720px;background:#071827;padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
 .hidden{display:none}
 .btn-danger{background:linear-gradient(90deg,var(--danger),#f43f5e);color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
 .row-actions{display:flex;gap:8px;align-items:center}
 .tooltip{position:relative}
 .tooltip:hover::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#071827;color:#e6eef8;padding:8px;border-radius:8px;font-size:12px;white-space:nowrap;box-shadow:0 8px 24px rgba(2,6,23,0.6)}
-@media (max-width:980px){ .grid{grid-template-columns:1fr} .controls{flex-wrap:wrap} .modal-card{width:92%} }
+@media (max-width:980px){ .grid{grid-template-columns:1fr} .controls{flex-wrap:wrap} }
 </style>
 </head>
 <body>
@@ -65,7 +61,7 @@ th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;backg
     <div class="logo">V</div>
     <div>
       <h1 class="title">Calculadora VENTO</h1>
-      <div class="subtitle">Dashboard con alertas, auditoría y generación de tickets</div>
+      <div class="subtitle">Calculadora enfocada en servicios requeridos por fecha y km</div>
     </div>
 
     <div class="controls">
@@ -82,13 +78,11 @@ th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;backg
     </div>
   </div>
 
-  <div id="globalAlertBanner" class="banner hidden" role="status" aria-live="assertive"></div>
-
   <div class="grid">
     <div class="card">
       <div class="kpi">
         <div class="item">
-          <div class="label">Estado de garantía</div>
+          <div class="label">Estado</div>
           <div id="warrantyBadge" class="status-pill status-ok">—</div>
         </div>
         <div class="item">
@@ -152,32 +146,11 @@ th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;backg
         <div style="margin-top:8px;display:flex;gap:8px;flex-direction:column">
           <button id="btnMarkAllDone" class="btn-primary">Marcar todos realizados</button>
           <button id="btnClearDone" class="btn-ghost">Limpiar realizados</button>
-          <button id="btnGenerateTicket" class="btn-danger">Generar ticket de revisión</button>
         </div>
       </div>
 
       <div style="margin-top:12px" class="small">Guardado automático en tu navegador. Exporta para compartir.</div>
     </aside>
-  </div>
-</div>
-
-<!-- Modal: Ticket / Revisión -->
-<div id="modalTicket" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div class="modal-card">
-    <h3 id="modalTitle">Generar ticket de revisión</h3>
-    <div class="small" style="margin-top:8px">Revisa los motivos y completa la información para crear el reporte.</div>
-    <div style="margin-top:12px">
-      <label class="small">Asignar a
-        <input id="ticketAssignee" class="inp" type="text" placeholder="Nombre o departamento">
-      </label>
-      <label class="small" style="margin-top:8px">Comentarios
-        <textarea id="ticketComments" class="inp" rows="3" placeholder="Observaciones y pasos recomendados"></textarea>
-      </label>
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
-      <button id="btnTicketCancel" class="btn-ghost">Cancelar</button>
-      <button id="btnTicketCreate" class="btn-primary">Crear ticket y exportar</button>
-    </div>
   </div>
 </div>
 
@@ -222,8 +195,8 @@ function loadState(){
 }
 
 /* Alerts persistence */
-function saveAlerts(){ localStorage.setItem(ALERTS_KEY, JSON.stringify(window.alerts || [])); renderAlertList(); renderAlertsBanner(); }
-function loadAlerts(){ window.alerts = JSON.parse(localStorage.getItem(ALERTS_KEY) || '[]'); renderAlertList(); renderAlertsBanner(); }
+function saveAlerts(){ localStorage.setItem(ALERTS_KEY, JSON.stringify(window.alerts || [])); renderAlertList(); }
+function loadAlerts(){ window.alerts = JSON.parse(localStorage.getItem(ALERTS_KEY) || '[]'); renderAlertList(); }
 
 /* Audit */
 function appendAudit(message){
@@ -260,7 +233,7 @@ $('btnReset').addEventListener('click', () => {
   localStorage.removeItem(AUDIT_KEY);
   invoiceDate = null; kmActual = 0; state = []; window.alerts = [];
   $('fechaFactura').value=''; $('kmActual').value='0';
-  tbody.innerHTML=''; recomputeSummary(); renderAlertList(); renderAuditList(); renderAlertsBanner();
+  tbody.innerHTML=''; recomputeSummary(); renderAlertList(); renderAuditList();
 });
 
 $('btnSave').addEventListener('click', saveState);
@@ -276,13 +249,6 @@ $('btnExport').addEventListener('click', () => {
   const a = document.createElement('a'); a.href = url; a.download = 'vento_servicios_alertas.csv'; a.click(); URL.revokeObjectURL(url);
   appendAudit('Exportado CSV de servicios');
 });
-
-/* Ticket modal */
-$('btnGenerateTicket').addEventListener('click', () => {
-  openTicketModal();
-});
-$('btnTicketCancel').addEventListener('click', closeTicketModal);
-$('btnTicketCreate').addEventListener('click', createTicket);
 
 /* Initialize state */
 function initState(){
@@ -342,12 +308,13 @@ function renderTable(){
     inpKm.addEventListener('input', () => { s.km = inpKm.value; validateRow(tr,s); recomputeSummary(); saveState(); });
 
     btnReview.addEventListener('click', () => {
-      pushAlert('Solicitud de revisión','Alta', s.num, `Revisión solicitada manualmente por asesor para servicio ${s.num}`);
-      openTicketModal(`Revisión servicio ${s.num}`, `Servicio ${s.num}: revisar estado y evidencias.`);
+      pushAlert('Solicitud de revisión','Media', s.num, `Revisión solicitada por asesor para servicio ${s.num}`);
+      appendAudit(`Solicitud de revisión para servicio ${s.num}`);
+      alert('Solicitud de revisión registrada (simulado).');
     });
 
     btnEvidence.addEventListener('click', () => {
-      pushAlert('Evidencia adjunta','Media', s.num, `Evidencia adjunta por asesor para servicio ${s.num}`);
+      pushAlert('Evidencia adjunta','Baja', s.num, `Evidencia adjunta por asesor para servicio ${s.num}`);
       appendAudit(`Evidencia adjunta para servicio ${s.num}`);
       alert('Marca de evidencia registrada en el sistema (simulado).');
     });
@@ -365,7 +332,6 @@ function renderRowState(tr,s){
 }
 
 function getLastRecordedKmBefore(num){
-  // find highest km among services with num < given and done
   const prev = state.filter(x => x.num < num && x.km).map(x => Number(x.km));
   if(prev.length === 0) return null;
   return Math.max(...prev);
@@ -389,8 +355,7 @@ function validateRow(tr,s){
     }
     const fechaLim = new Date(s.fechaLimit);
     const lateByDate = new Date(s.fecha) > fechaLim;
-    const lateByKm = Number(s.km) < s.kmLimit && kmActual >= s.kmLimit ? false : false;
-    if(lateByDate || lateByKm){
+    if(lateByDate){
       msgCell.textContent = 'Registrado (fuera de plazo)';
       pushAlert('Realizado fuera de plazo','Media', s.num, `Registrado ${s.fecha} · ${s.km} km (fuera de plazo)`);
       return true;
@@ -433,19 +398,6 @@ function renderAlertList(){
     div.innerHTML = `<strong>[${a.severity}]</strong> Servicio ${a.serviceNum} — ${a.type}<div class="small" style="margin-top:6px">${a.details}</div><div class="small" style="margin-top:6px;color:var(--muted)">${new Date(a.createdAt).toLocaleString()}</div>`;
     el.appendChild(div);
   });
-}
-
-function renderAlertsBanner(){
-  const banner = $('globalAlertBanner');
-  const high = (window.alerts || []).filter(a => a.severity === 'Alta');
-  if(high.length){
-    banner.classList.remove('hidden');
-    banner.innerHTML = `<strong>ALERTAS CRÍTICAS:</strong> ${high.length} casos. <button id="btnBannerTicket" class="btn-primary" style="margin-left:12px">Generar ticket de revisión</button>`;
-    // attach handler
-    setTimeout(()=>{ const b = $('btnBannerTicket'); if(b) b.addEventListener('click', openTicketModal); }, 50);
-  } else {
-    banner.classList.add('hidden');
-  }
 }
 
 /* Summary evaluation */
@@ -491,52 +443,6 @@ function recomputeSummary(){
     $('warrantyBadge').textContent = 'VIGENTE'; $('warrantyBadge').className = 'status-pill status-ok';
     $('reasons').textContent = '';
   }
-}
-
-/* Ticket modal helpers */
-function openTicketModal(title, defaultComment){
-  $('modalTicket').classList.remove('hidden');
-  if(title) $('modalTitle').textContent = title;
-  if(defaultComment) $('ticketComments').value = defaultComment;
-  else $('ticketComments').value = '';
-  $('ticketAssignee').value = '';
-}
-function closeTicketModal(){ $('modalTicket').classList.add('hidden'); }
-
-function createTicket(){
-  // collect alerts and reasons
-  const alerts = window.alerts.slice(0,50);
-  const ticket = {
-    id: `T-${Date.now()}`,
-    createdAt: new Date().toISOString(),
-    assignee: $('ticketAssignee').value || 'Sin asignar',
-    comments: $('ticketComments').value || '',
-    invoiceDate, kmActual,
-    services: state.map(s => ({num:s.num, required:s.required, done:s.done, fecha:s.fecha, km:s.km, estado:getRowStateText(s)})),
-    alerts
-  };
-  // export ticket as JSON/CSV (here CSV summary)
-  const rows = [
-    ['Ticket ID', ticket.id],
-    ['Creado', new Date(ticket.createdAt).toLocaleString()],
-    ['Asignado a', ticket.assignee],
-    ['Comentarios', ticket.comments],
-    ['Fecha factura', invoiceDate],
-    ['Km actual', kmActual],
-    [],
-    ['Servicios:'],
-    ['Servicio','Km límite','Meses','Fecha límite','Requerido','Realizado','Fecha realizado','Km realizado','Estado']
-  ];
-  ticket.services.forEach(s => rows.push([s.num, state.find(x=>x.num===s.num).kmLimit, state.find(x=>x.num===s.num).months, fmt(state.find(x=>x.num===s.num).fechaLimit), s.required ? 'Sí':'No', s.done ? 'Sí':'No', s.fecha || '', s.km || '', s.estado]));
-  const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = `${ticket.id}_revisión.csv`; a.click(); URL.revokeObjectURL(url);
-
-  appendAudit(`Ticket ${ticket.id} creado y exportado. Asignado a ${ticket.assignee}`);
-  pushAlert('Ticket creado','Alta','-', `Ticket ${ticket.id} creado por asesor. Asignado a ${ticket.assignee}`);
-  closeTicketModal();
-  alert('Ticket creado y exportado (archivo CSV).');
 }
 
 /* Load on start */
