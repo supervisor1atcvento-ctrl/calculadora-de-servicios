@@ -38,14 +38,11 @@ th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;backg
 .small{font-size:13px;color:var(--muted)}
 .inp{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
 .msgCell{font-size:13px;color:var(--muted)}
-.status-pill{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:700;color:#071827;font-size:13px}
+.status-pill{display:inline-block;padding:8px 12px;border-radius:10px;font-weight:700;color:#071827;font-size:13px}
 .status-ok{background:var(--success)}
 .status-bad{background:var(--danger)}
 .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
 .footer-note{margin-top:12px;font-size:13px;color:var(--muted)}
-.alert-list{max-height:220px;overflow:auto;margin-top:8px;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02)}
-.alert-item{padding:8px;border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
-.audit-log{max-height:180px;overflow:auto;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02);margin-top:8px}
 .hidden{display:none}
 .tooltip{position:relative}
 .tooltip:hover::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#071827;color:#e6eef8;padding:8px;border-radius:8px;font-size:12px;white-space:nowrap;box-shadow:0 8px 24px rgba(2,6,23,0.6)}
@@ -116,11 +113,6 @@ th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;backg
       </div>
 
       <div id="msgArea" class="footer-note"></div>
-
-      <div style="margin-top:12px">
-        <div class="small">Registro de auditoría</div>
-        <div id="auditLog" class="audit-log"></div>
-      </div>
     </div>
 
     <aside class="card" aria-live="polite">
@@ -130,11 +122,6 @@ th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;backg
         <div style="margin-top:12px"><strong>Motivos de anulación</strong></div>
         <div id="reasons" class="small" style="margin-top:8px;color:var(--danger)"></div>
       </div>
-
-      <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
-
-      <div class="small">Alertas recientes</div>
-      <div id="alertList" class="alert-list"></div>
 
       <div style="margin-top:12px" class="small">Guardado automático en tu navegador. Exporta para compartir.</div>
     </aside>
@@ -160,10 +147,9 @@ let invoiceDate = null;
 let kmActual = 0;
 let state = []; // only required services will be stored here
 let allServices = []; // full list with limits
-window.alerts = [];
-const STORAGE_KEY = 'vento_calc_required_v1';
-const ALERTS_KEY = 'vento_alerts_v1';
-const AUDIT_KEY = 'vento_audit_v1';
+
+const STORAGE_KEY = 'vento_calc_required_v2';
+const AUDIT_KEY = 'vento_audit_v2';
 
 /* Persistence */
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify({invoiceDate, kmActual, state})); appendAudit('Guardado local'); $('msgArea').textContent = 'Guardado local.'; setTimeout(()=>$('msgArea').textContent='',1200); }
@@ -176,29 +162,19 @@ function loadState(){
     $('fechaFactura').value = invoiceDate || '';
     $('kmActual').value = kmActual || 0;
     renderTable(); recomputeSummary();
-    loadAlerts();
     renderAuditList();
     return true;
   }catch(e){ return false; }
 }
 
-/* Alerts & audit */
-function saveAlerts(){ localStorage.setItem(ALERTS_KEY, JSON.stringify(window.alerts || [])); renderAlertList(); }
-function loadAlerts(){ window.alerts = JSON.parse(localStorage.getItem(ALERTS_KEY) || '[]'); renderAlertList(); }
+/* Audit (kept minimal per request) */
 function appendAudit(message){
   const audits = JSON.parse(localStorage.getItem(AUDIT_KEY) || '[]');
   audits.unshift({ts: new Date().toISOString(), user: 'Asesor', message});
   localStorage.setItem(AUDIT_KEY, JSON.stringify(audits));
-  renderAuditList();
 }
 function renderAuditList(){
-  const audits = JSON.parse(localStorage.getItem(AUDIT_KEY) || '[]');
-  const el = $('auditLog'); el.innerHTML = '';
-  audits.slice(0,50).forEach(a => {
-    const d = document.createElement('div'); d.className='small'; d.style.marginBottom='6px';
-    d.textContent = `${new Date(a.ts).toLocaleString()} — ${a.user}: ${a.message}`;
-    el.appendChild(d);
-  });
+  // removed UI element per request — keep function minimal for internal logs only
 }
 
 /* UI actions */
@@ -216,11 +192,10 @@ $('btnCalc').addEventListener('click', () => {
 $('btnReset').addEventListener('click', () => {
   if(!confirm('Limpiar todo y reiniciar?')) return;
   localStorage.removeItem(STORAGE_KEY);
-  localStorage.removeItem(ALERTS_KEY);
   localStorage.removeItem(AUDIT_KEY);
-  invoiceDate = null; kmActual = 0; state = []; allServices = []; window.alerts = [];
+  invoiceDate = null; kmActual = 0; state = []; allServices = [];
   $('fechaFactura').value=''; $('kmActual').value='0';
-  tbody.innerHTML=''; recomputeSummary(); renderAlertList(); renderAuditList();
+  tbody.innerHTML=''; recomputeSummary();
 });
 
 $('btnSave').addEventListener('click', saveState);
@@ -330,14 +305,14 @@ function validateRow(tr,s){
     if(lastKm && Number(s.km) < lastKm){
       msgCell.textContent = `Km < último registrado (${lastKm}) — inconsistencia`;
       tr.classList.add('row-bad');
-      pushAlert('Inconsistencia de km','Media', s.num, `Km ingresado ${s.km} < último km registrado ${lastKm}`);
+      appendAudit(`Inconsistencia km servicio ${s.num}: ingresado ${s.km} < último ${lastKm}`);
       return false;
     }
     const fechaLim = new Date(s.fechaLimit);
     const lateByDate = new Date(s.fecha) > fechaLim;
     if(lateByDate){
       msgCell.textContent = 'Registrado (fuera de plazo)';
-      pushAlert('Realizado fuera de plazo','Media', s.num, `Registrado ${s.fecha} · ${s.km} km (fuera de plazo)`);
+      appendAudit(`Servicio ${s.num} registrado fuera de plazo: ${s.fecha} · ${s.km} km`);
       return true;
     }
     msgCell.textContent = 'Registrado';
@@ -351,7 +326,7 @@ function validateRow(tr,s){
     if(overdueByDate || overdueByKm){
       msgCell.textContent = 'Requerido y NO realizado — riesgo de anulación';
       tr.classList.add('row-bad');
-      pushAlert('Requerido y no realizado','Alta', s.num, `Servicio ${s.num} requerido y no realizado. Fecha límite ${fmt(s.fechaLimit)} · Km límite ${s.kmLimit.toLocaleString()}`);
+      appendAudit(`Servicio ${s.num} requerido y no realizado (vencido)`);
       return false;
     }
     msgCell.textContent = 'Requerido';
@@ -359,45 +334,7 @@ function validateRow(tr,s){
   }
 }
 
-/* Alerts management */
-function pushAlert(type, severity, serviceNum, details){
-  const alert = {
-    id: `A-${Date.now()}-${Math.floor(Math.random()*999)}`,
-    type, severity, serviceNum,
-    details, createdAt: new Date().toISOString(),
-    read: false
-  };
-  window.alerts.unshift(alert);
-  saveAlerts();
-  appendAudit(`Alerta creada: ${type} (servicio ${serviceNum})`);
-  return alert;
-}
-
-function renderAlertList(){
-  const el = $('alertList'); el.innerHTML = '';
-  window.alerts.slice(0,50).forEach(a => {
-    const div = document.createElement('div'); div.className='alert-item';
-    div.innerHTML = `<strong>[${a.severity}]</strong> Servicio ${a.serviceNum} — ${a.type}<div class="small" style="margin-top:6px">${a.details}</div><div class="small" style="margin-top:6px;color:var(--muted)">${new Date(a.createdAt).toLocaleString()}</div>`;
-    el.appendChild(div);
-  });
-}
-
-/* Summary evaluation */
-function getRowStateText(s){
-  if(s.done){
-    const fechaLim = new Date(s.fechaLimit);
-    const lateByDate = new Date(s.fecha) > fechaLim;
-    if(lateByDate) return 'Registrado (fuera de plazo)';
-    return 'Registrado';
-  } else {
-    const fechaLim = new Date(s.fechaLimit);
-    const overdueByDate = new Date() > fechaLim;
-    const overdueByKm = kmActual >= s.kmLimit;
-    if(overdueByDate || overdueByKm) return 'Requerido y NO realizado (vencido)';
-    return 'Requerido';
-  }
-}
-
+/* Summary evaluation: set Estado text to the concise message requested */
 function recomputeSummary(){
   if(!invoiceDate){ $('warrantyBadge').textContent='—'; $('requiredCount').textContent='0'; $('pendingCount').textContent='0'; $('vigenciaInfo').textContent='—'; $('reasons').textContent=''; return; }
   const vigDate = addMonths(invoiceDate,36);
@@ -407,22 +344,32 @@ function recomputeSummary(){
   let required = state.length;
   let pending = state.filter(s => !s.done).length;
   const reasons = [];
-  state.forEach(s => {
-    if(s.required && !s.done){
-      const overdueByDate = new Date() > new Date(s.fechaLimit);
-      if(overdueByDate) reasons.push(`Servicio ${s.num} requerido por fecha y no realizado (límite ${fmt(s.fechaLimit)})`);
-    }
+  let statusMessage = 'VIGENTE';
+
+  // If any required service is not done and is overdue by date or km -> show the exact message
+  const overdueItems = state.filter(s => {
+    const fechaLim = new Date(s.fechaLimit);
+    const overdueByDate = new Date() > fechaLim;
+    const overdueByKm = kmActual >= s.kmLimit;
+    return !s.done && (overdueByDate || overdueByKm);
   });
+
+  if(overdueItems.length > 0){
+    // Use the concise status text requested
+    statusMessage = 'Requerido y NO realizado — riesgo de anulación';
+    overdueItems.forEach(s => reasons.push(`Servicio ${s.num}: fecha límite ${fmt(s.fechaLimit)} · km límite ${s.kmLimit.toLocaleString()}`));
+    $('warrantyBadge').textContent = statusMessage;
+    $('warrantyBadge').className = 'status-pill status-bad';
+    $('reasons').innerHTML = reasons.map(r=>`• ${r}`).join('<br>');
+  } else {
+    // No overdue required items: show VIGENTE and clear reasons
+    $('warrantyBadge').textContent = 'VIGENTE';
+    $('warrantyBadge').className = 'status-pill status-ok';
+    $('reasons').textContent = '';
+  }
 
   $('requiredCount').textContent = required;
   $('pendingCount').textContent = pending;
-  if(reasons.length){
-    $('warrantyBadge').textContent = 'ANULADA'; $('warrantyBadge').className = 'status-pill status-bad';
-    $('reasons').innerHTML = reasons.map(r=>`• ${r}`).join('<br>');
-  } else {
-    $('warrantyBadge').textContent = 'VIGENTE'; $('warrantyBadge').className = 'status-pill status-ok';
-    $('reasons').textContent = '';
-  }
 }
 
 /* Load on start */
@@ -430,8 +377,6 @@ window.addEventListener('load', () => {
   if(!loadState()){
     $('fechaFactura').value = '';
     $('kmActual').value = '0';
-    renderAuditList();
-    loadAlerts();
   } else {
     kmActual = Number($('kmActual').value || 0);
   }
