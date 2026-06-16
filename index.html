@@ -3,208 +3,347 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Calculadora VENTO - Vista tipo Excel</title>
+<title>Calculadora VENTO — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--accent:#F28F17;--muted:#616160;--ok:#e8f5e9;--bad:#fdecea;}
-body{font-family:Segoe UI, Roboto, Arial; margin:18px; color:#231f20;}
-.container{max-width:980px;margin:0 auto;}
-h1{font-size:20px;margin-bottom:6px;}
-.controls{display:flex;gap:8px;align-items:center;margin-bottom:12px;}
-input,select,button{padding:8px;border-radius:6px;border:1px solid #e9e9e9;}
-table{width:100%;border-collapse:collapse;margin-top:8px;}
-th,td{padding:8px;border:1px solid #eee;text-align:left;font-size:14px;}
-th{background:#fafafa;}
-.row-ok{background:var(--ok);}
-.row-bad{background:var(--bad);}
+:root{
+  --bg:#f4f6f9; --card:#ffffff; --muted:#6b7280; --accent:#0f6cff;
+  --accent-2:#f28f17; --success:#16a34a; --danger:#dc2626; --glass: rgba(255,255,255,0.6);
+  --radius:12px; --shadow: 0 8px 30px rgba(15,20,30,0.06);
+}
+*{box-sizing:border-box}
+body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; background:linear-gradient(180deg,#eef2ff 0%,var(--bg) 100%); color:#0f1724;}
+.app{max-width:1100px;margin:28px auto;padding:20px;}
+.header{display:flex;gap:16px;align-items:center;margin-bottom:18px;}
+.brand{display:flex;flex-direction:column;}
+.title{font-size:20px;font-weight:700;margin:0;}
+.subtitle{font-size:13px;color:var(--muted);margin-top:4px;}
+.controls{display:flex;gap:10px;align-items:center;margin-left:auto;}
+.input,select,button{padding:10px 12px;border-radius:10px;border:1px solid #e6e9ef;background:var(--card);font-size:14px;}
+.input[type="number"]{width:120px;}
+.btn-primary{background:linear-gradient(90deg,var(--accent),#2b8cff);color:#fff;border:0;cursor:pointer;box-shadow:0 6px 18px rgba(15,108,255,0.12);}
+.btn-ghost{background:transparent;border:1px solid #e6e9ef;color:var(--muted);cursor:pointer;}
+.grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px;}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;}
+.table-wrap{overflow:auto;}
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th,td{padding:10px;border-bottom:1px solid #f1f3f7;text-align:left;vertical-align:middle;}
+th{font-weight:600;color:var(--muted);font-size:13px;background:transparent;position:sticky;top:0;}
+.row-required{background:linear-gradient(90deg, rgba(242,143,23,0.06), transparent);}
+.row-done{background:linear-gradient(90deg, rgba(22,163,74,0.06), transparent);}
+.row-bad{background:linear-gradient(90deg, rgba(220,38,38,0.06), transparent);}
 .small{font-size:13px;color:var(--muted);}
-.status{padding:10px;border-radius:8px;margin-top:8px;}
-.btn{background:var(--accent);color:#fff;border:0;padding:8px 10px;border-radius:6px;cursor:pointer;}
-.summary{margin-top:12px;padding:10px;border-radius:8px;border:1px solid #eee;}
-.badge{font-weight:700;color:#fff;background:#444;padding:4px 8px;border-radius:6px;}
+.kpi{display:flex;gap:10px;align-items:center;margin-bottom:12px;}
+.kpi .item{flex:1;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.6),#fff);box-shadow:0 6px 18px rgba(15,20,30,0.03);text-align:center;}
+.kpi .value{font-weight:700;font-size:18px;}
+.status-pill{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:700;color:#fff;font-size:13px;}
+.status-ok{background:var(--success);}
+.status-bad{background:var(--danger);}
+.controls-compact{display:flex;gap:8px;align-items:center;}
+.msg{font-size:13px;color:var(--muted);margin-top:8px;}
+.footer-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;}
+.icon{width:18px;height:18px;display:inline-block;vertical-align:middle;margin-right:6px;opacity:0.9;}
+input[type="checkbox"]{width:18px;height:18px;}
+td .inp{width:100%;padding:8px;border-radius:8px;border:1px solid #eef2f6;font-size:13px;}
+@media (max-width:980px){ .grid{grid-template-columns:1fr; } .controls{flex-wrap:wrap;} }
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>Calculadora VENTO - Vista tipo Excel</h1>
-  <div class="small">Pega la fecha de factura y el km actual; la tabla calculará qué servicios aplican.</div>
+<div class="app">
+  <div class="header">
+    <div class="brand">
+      <h1 class="title">Calculadora VENTO</h1>
+      <div class="subtitle">Vista tipo calculadora — todos los servicios, validaciones y estado de garantía</div>
+    </div>
 
-  <div class="controls">
-    <label>Fecha factura <input id="fechaFactura" type="date"></label>
-    <label>Km actual <input id="kmActual" type="number" min="0" value="0"></label>
-    <button id="btnCalc" class="btn">Calcular</button>
-    <div style="margin-left:auto" class="small" id="vigenciaInfo">—</div>
+    <div class="controls">
+      <label class="small">Fecha factura
+        <input id="fechaFactura" class="input" type="date">
+      </label>
+      <label class="small">Km actual
+        <input id="kmActual" class="input" type="number" min="0" value="0">
+      </label>
+      <div class="controls-compact">
+        <button id="btnCalc" class="btn-primary">Calcular</button>
+        <button id="btnReset" class="btn-ghost">Limpiar</button>
+      </div>
+    </div>
   </div>
 
-  <div id="tableWrap" style="display:none">
-    <table id="svcTable">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Km límite</th>
-          <th>Meses</th>
-          <th>Fecha límite</th>
-          <th>Requerido</th>
-          <th>Realizado</th>
-          <th>Fecha realizado</th>
-          <th>Km realizado</th>
-          <th>Estado / Mensaje</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+  <div class="grid">
+    <div class="card">
+      <div class="kpi">
+        <div class="item">
+          <div class="small">Estado de garantía</div>
+          <div id="warrantyBadge" class="status-pill status-ok">—</div>
+        </div>
+        <div class="item">
+          <div class="small">Servicios requeridos</div>
+          <div id="requiredCount" class="value">0</div>
+        </div>
+        <div class="item">
+          <div class="small">Servicios pendientes</div>
+          <div id="pendingCount" class="value">0</div>
+        </div>
+      </div>
 
-    <div class="summary" id="summary">
-      <div><span class="badge">Estado:</span> <span id="warrantyStatus">—</span></div>
-      <div class="small" id="summaryDetails"></div>
+      <div class="table-wrap">
+        <table id="svcTable" aria-live="polite">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Km límite</th>
+              <th>Meses</th>
+              <th>Fecha límite</th>
+              <th>Requerido</th>
+              <th>Realizado</th>
+              <th>Fecha realizado</th>
+              <th>Km realizado</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="footer-actions">
+        <button id="btnExport" class="btn-ghost">Exportar CSV</button>
+        <button id="btnSave" class="btn-primary">Guardar</button>
+      </div>
+      <div id="msgArea" class="msg"></div>
     </div>
+
+    <aside class="card">
+      <div class="small">Resumen</div>
+      <div style="margin-top:10px">
+        <div><strong>Vigencia:</strong> <span id="vigenciaInfo">—</span></div>
+        <div style="margin-top:8px"><strong>Motivos de anulación</strong></div>
+        <div id="reasons" class="small" style="margin-top:6px;color:var(--danger)"></div>
+      </div>
+
+      <hr style="margin:12px 0;border:none;border-top:1px solid #f1f3f7">
+
+      <div class="small">Acciones rápidas</div>
+      <div style="margin-top:8px;display:flex;gap:8px;flex-direction:column">
+        <button id="btnMarkAllDone" class="btn-primary">Marcar todos como realizados</button>
+        <button id="btnClearDone" class="btn-ghost">Limpiar realizados</button>
+      </div>
+      <div style="margin-top:12px" class="small">Los cambios se guardan automáticamente en tu navegador.</div>
+    </aside>
   </div>
 </div>
 
 <script>
+/* Datos de servicio (misma lógica que tu calculadora original) */
 const SERVICES = [
-{num:1, km:300, months:1},{num:2, km:2000, months:3},{num:3, km:4000, months:6},
-{num:4, km:6000, months:9},{num:5, km:9000, months:12},{num:6, km:12000, months:15},
-{num:7, km:15000, months:18},{num:8, km:18000, months:21},{num:9, km:21000, months:24},
-{num:10, km:24000, months:27},{num:11, km:27000, months:30},{num:12, km:30000, months:33},
-{num:13, km:33000, months:36}
+  {num:1, km:300, months:1},{num:2, km:2000, months:3},{num:3, km:4000, months:6},
+  {num:4, km:6000, months:9},{num:5, km:9000, months:12},{num:6, km:12000, months:15},
+  {num:7, km:15000, months:18},{num:8, km:18000, months:21},{num:9, km:21000, months:24},
+  {num:10, km:24000, months:27},{num:11, km:27000, months:30},{num:12, km:30000, months:33},
+  {num:13, km:33000, months:36}
 ];
 
 const $ = id => document.getElementById(id);
+const tbody = document.querySelector('#svcTable tbody');
 const addMonths = (dateStr, months) => { const d = new Date(dateStr); d.setMonth(d.getMonth()+months); return d; };
 const fmt = d => d ? new Date(d).toLocaleDateString('es-MX') : '-';
 
-$('btnCalc').addEventListener('click', buildTable);
+let invoiceDate = null;
+let kmActual = 0;
+let state = []; // {num, required, done, fecha, km}
 
-function buildTable(){
-  const invoiceDate = $('fechaFactura').value;
-  let kmActual = Number($('kmActual').value || 0);
+/* --- Persistence --- */
+const STORAGE_KEY = 'vento_calc_v1';
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify({invoiceDate, kmActual, state})); $('msgArea').textContent = 'Guardado localmente.'; setTimeout(()=>$('msgArea').textContent='',1200); }
+function loadState(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(!raw) return false;
+  try{
+    const obj = JSON.parse(raw);
+    invoiceDate = obj.invoiceDate; kmActual = obj.kmActual; state = obj.state || [];
+    $('fechaFactura').value = invoiceDate || '';
+    $('kmActual').value = kmActual || 0;
+    renderTable();
+    recomputeSummary();
+    return true;
+  }catch(e){ return false; }
+}
+
+/* --- Build / render --- */
+$('btnCalc').addEventListener('click', () => {
+  invoiceDate = $('fechaFactura').value;
+  kmActual = Number($('kmActual').value || 0);
   if(!invoiceDate){ alert('Ingresa la fecha de factura'); return; }
+  initState();
+  renderTable();
+  recomputeSummary();
+  saveState();
+});
 
-  const vigDate = addMonths(invoiceDate, 36);
-  const vigText = (new Date() > vigDate || kmActual > 33000) ? 'Garantía vencida' : `Válida hasta ${fmt(vigDate)} o 33,000 km`;
-  $('vigenciaInfo').textContent = vigText;
+$('btnReset').addEventListener('click', () => {
+  if(!confirm('Limpiar todo y reiniciar?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  invoiceDate = null; kmActual = 0; state = [];
+  $('fechaFactura').value=''; $('kmActual').value='0';
+  tbody.innerHTML=''; recomputeSummary();
+});
 
-  const tbody = document.querySelector('#svcTable tbody');
+$('btnSave').addEventListener('click', saveState);
+$('btnMarkAllDone').addEventListener('click', () => { state.forEach(s=>{ s.done=true; if(!s.fecha) s.fecha = new Date().toISOString().slice(0,10); if(!s.km) s.km = kmActual; }); renderTable(); recomputeSummary(); saveState(); });
+$('btnClearDone').addEventListener('click', () => { state.forEach(s=>{ s.done=false; s.fecha=''; s.km=''; }); renderTable(); recomputeSummary(); saveState(); });
+
+$('btnExport').addEventListener('click', () => {
+  const rows = [['Servicio','Km límite','Meses','Fecha límite','Requerido','Realizado','Fecha realizado','Km realizado']];
+  state.forEach(s=>{
+    rows.push([s.num, s.kmLimit, s.months, s.fechaLimit, s.required ? 'Sí':'No', s.done ? 'Sí':'No', s.fecha || '', s.km || '']);
+  });
+  const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'vento_servicios.csv'; a.click(); URL.revokeObjectURL(url);
+});
+
+/* Initialize state from SERVICES and invoiceDate */
+function initState(){
+  state = SERVICES.map(s => {
+    const fechaLimit = addMonths(invoiceDate, s.months);
+    const required = (kmActual >= s.km) || (new Date() >= fechaLimit);
+    return { num: s.num, kmLimit: s.km, months: s.months, fechaLimit: fechaLimit.toISOString(), required, done:false, fecha:'', km:'' };
+  });
+}
+
+/* Render table rows with inputs and handlers */
+function renderTable(){
   tbody.innerHTML = '';
-  const today = new Date();
-
-  SERVICES.forEach(s => {
-    const fechaLim = addMonths(invoiceDate, s.months);
-    const requiredByKm = kmActual >= s.km;
-    const requiredByDate = today >= fechaLim;
-    const required = requiredByKm || requiredByDate;
-
+  state.forEach((s, idx) => {
     const tr = document.createElement('tr');
     tr.dataset.num = s.num;
+    // row class
+    if(s.done) tr.classList.add('row-done');
+    else if(s.required) tr.classList.add('row-required');
 
     tr.innerHTML = `
       <td>${s.num}</td>
-      <td>${s.km.toLocaleString()}</td>
+      <td>${s.kmLimit.toLocaleString()}</td>
       <td>${s.months}</td>
-      <td>${fmt(fechaLim)}</td>
-      <td><input type="checkbox" class="chkRequired" ${required ? 'checked' : ''}></td>
-      <td><select class="selDone"><option value="no">No</option><option value="si">Sí</option></select></td>
-      <td><input type="date" class="inpDate" disabled></td>
-      <td><input type="number" class="inpKm" min="0" disabled></td>
-      <td class="msg small"></td>
+      <td>${fmt(s.fechaLimit)}</td>
+      <td style="text-align:center"><input type="checkbox" class="chkReq" ${s.required ? 'checked' : ''}></td>
+      <td style="text-align:center">
+        <select class="selDone">
+          <option value="no" ${!s.done ? 'selected' : ''}>No</option>
+          <option value="si" ${s.done ? 'selected' : ''}>Sí</option>
+        </select>
+      </td>
+      <td><input class="inp inpDate" type="date" value="${s.fecha || ''}" ${s.done ? '' : 'disabled'}></td>
+      <td><input class="inp inpKm" type="number" min="0" value="${s.km || ''}" ${s.done ? '' : 'disabled'}></td>
+      <td class="small msgCell"></td>
     `;
     tbody.appendChild(tr);
-  });
 
-  // enable table view
-  $('tableWrap').style.display = 'block';
-  attachRowHandlers(invoiceDate);
-  recomputeSummary(invoiceDate);
-}
-
-function attachRowHandlers(invoiceDate){
-  const rows = document.querySelectorAll('#svcTable tbody tr');
-  rows.forEach((tr, idx) => {
+    // handlers
+    const chkReq = tr.querySelector('.chkReq');
     const selDone = tr.querySelector('.selDone');
     const inpDate = tr.querySelector('.inpDate');
     const inpKm = tr.querySelector('.inpKm');
-    const chkReq = tr.querySelector('.chkRequired');
-    const msg = tr.querySelector('.msg');
+    const msgCell = tr.querySelector('.msgCell');
 
+    chkReq.addEventListener('change', () => { s.required = chkReq.checked; recomputeSummary(); saveState(); renderRowState(tr,s); });
     selDone.addEventListener('change', () => {
-      const done = selDone.value === 'si';
-      inpDate.disabled = !done;
-      inpKm.disabled = !done;
-      if(!done){ inpDate.value=''; inpKm.value=''; msg.textContent=''; tr.classList.remove('row-bad','row-ok'); }
-      recomputeSummary(invoiceDate);
+      s.done = selDone.value === 'si';
+      inpDate.disabled = !s.done; inpKm.disabled = !s.done;
+      if(!s.done){ s.fecha=''; s.km=''; inpDate.value=''; inpKm.value=''; }
+      renderRowState(tr,s); recomputeSummary(); saveState();
     });
+    inpDate.addEventListener('change', () => { s.fecha = inpDate.value; validateRow(tr,s); recomputeSummary(); saveState(); });
+    inpKm.addEventListener('input', () => { s.km = inpKm.value; validateRow(tr,s); recomputeSummary(); saveState(); });
 
-    inpDate.addEventListener('change', () => { validateRow(tr, invoiceDate); recomputeSummary(invoiceDate); });
-    inpKm.addEventListener('input', () => { validateRow(tr, invoiceDate); recomputeSummary(invoiceDate); });
-    chkReq.addEventListener('change', () => { recomputeSummary(invoiceDate); });
+    // initial validation
+    renderRowState(tr,s);
   });
 }
 
-function validateRow(tr, invoiceDate){
-  const num = Number(tr.dataset.num);
-  const svc = SERVICES.find(s=>s.num===num);
-  const selDone = tr.querySelector('.selDone').value === 'si';
-  const inpDate = tr.querySelector('.inpDate').value;
-  const inpKm = Number(tr.querySelector('.inpKm').value || 0);
-  const msg = tr.querySelector('.msg');
-
-  msg.textContent = '';
-  tr.classList.remove('row-bad','row-ok');
-
-  if(selDone){
-    // fecha >= factura
-    if(new Date(inpDate) < new Date(invoiceDate)){ msg.textContent = 'Fecha < fecha factura'; tr.classList.add('row-bad'); return false; }
-    // km >= 0 and basic check vs service km if required by km
-    if(inpKm <= 0){ msg.textContent = 'Ingresa km'; tr.classList.add('row-bad'); return false; }
-    // if km less than service limit but service was required by km, warn (but allow)
-    if(inpKm < svc.km){ msg.textContent = `Km < límite (${svc.km.toLocaleString()}) — confirmar`; tr.classList.add('row-bad'); return true; }
-    tr.classList.add('row-ok');
-    return true;
-  } else {
-    // not done: if required and already overdue -> mark bad
-    const fechaLim = addMonths(invoiceDate, svc.months);
-    const today = new Date();
-    const requiredByDate = today > fechaLim;
-    if(requiredByDate){ msg.textContent = 'Requerido y no realizado — puede anular garantía'; tr.classList.add('row-bad'); return false; }
-    return true;
-  }
+/* Visual per-row update */
+function renderRowState(tr,s){
+  tr.classList.remove('row-done','row-bad','row-required');
+  if(s.done) tr.classList.add('row-done');
+  else if(s.required) tr.classList.add('row-required');
+  validateRow(tr,s);
 }
 
-function recomputeSummary(invoiceDate){
-  const rows = document.querySelectorAll('#svcTable tbody tr');
-  let anyBad = false;
-  const reasons = [];
-  rows.forEach(tr => {
-    const num = Number(tr.dataset.num);
-    const svc = SERVICES.find(s=>s.num===num);
-    const chkReq = tr.querySelector('.chkRequired').checked;
-    const selDone = tr.querySelector('.selDone').value === 'si';
-    const inpDate = tr.querySelector('.inpDate').value;
-    const inpKm = Number(tr.querySelector('.inpKm').value || 0);
-    const fechaLim = addMonths(invoiceDate, svc.months);
-    const today = new Date();
+/* Row validation rules */
+function validateRow(tr,s){
+  const msgCell = tr.querySelector('.msgCell');
+  msgCell.textContent = '';
+  tr.classList.remove('row-bad');
 
-    if(chkReq && !selDone){
-      // if overdue by date or km -> reason
-      const overdueByDate = today > fechaLim;
-      if(overdueByDate){ anyBad = true; reasons.push(`Servicio ${num} requerido por fecha y no realizado (fecha límite ${fmt(fechaLim)})`); tr.querySelector('.msg').textContent = 'Requerido y NO realizado'; tr.classList.add('row-bad'); }
+  if(s.done){
+    if(!s.fecha){ msgCell.textContent = 'Ingresa fecha'; tr.classList.add('row-bad'); return false; }
+    if(new Date(s.fecha) < new Date(invoiceDate)){ msgCell.textContent = 'Fecha < fecha factura'; tr.classList.add('row-bad'); return false; }
+    if(!s.km || Number(s.km) <= 0){ msgCell.textContent = 'Ingresa km válido'; tr.classList.add('row-bad'); return false; }
+    // if required by km but km entered is less than limit -> warn but allow
+    if(Number(s.km) < s.kmLimit && kmActual >= s.kmLimit){ msgCell.textContent = `Km < límite (${s.kmLimit.toLocaleString()}) — revisar`; tr.classList.add('row-bad'); return true; }
+    msgCell.textContent = 'Registrado';
+    return true;
+  } else {
+    // not done
+    const overdueByDate = new Date() > new Date(s.fechaLimit);
+    if(s.required && overdueByDate){
+      msgCell.textContent = 'Requerido y NO realizado — puede anular garantía';
+      tr.classList.add('row-bad');
+      return false;
     }
+    msgCell.textContent = s.required ? 'Requerido' : '';
+    return true;
+  }
+}
 
-    // run per-row validation to set classes/messages
-    validateRow(tr, invoiceDate);
+/* Summary evaluation */
+function recomputeSummary(){
+  if(!invoiceDate){ $('warrantyBadge').textContent='—'; $('requiredCount').textContent='0'; $('pendingCount').textContent='0'; $('vigenciaInfo').textContent='—'; $('reasons').textContent=''; return; }
+  const vigDate = addMonths(invoiceDate,36);
+  const vigText = (new Date() > vigDate || kmActual > 33000) ? `Vencida (hasta ${fmt(vigDate)} / 33,000 km)` : `Válida hasta ${fmt(vigDate)} o 33,000 km`;
+  $('vigenciaInfo').textContent = vigText;
+
+  let required = 0, pending = 0;
+  const reasons = [];
+  state.forEach(s => {
+    if(s.required) required++;
+    if(s.required && !s.done){
+      const overdueByDate = new Date() > new Date(s.fechaLimit);
+      if(overdueByDate) reasons.push(`Servicio ${s.num} requerido por fecha y no realizado (límite ${fmt(s.fechaLimit)})`);
+      pending++;
+    }
   });
 
-  const statusEl = $('warrantyStatus');
-  const detailsEl = $('summaryDetails');
-  if(anyBad){
-    statusEl.textContent = 'ANULADA';
-    statusEl.style.color = '#b71c1c';
-    detailsEl.innerHTML = reasons.map(r=>`• ${r}`).join('<br>');
+  $('requiredCount').textContent = required;
+  $('pendingCount').textContent = pending;
+  if(reasons.length){
+    $('warrantyBadge').textContent = 'ANULADA'; $('warrantyBadge').className = 'status-pill status-bad';
+    $('reasons').innerHTML = reasons.map(r=>`• ${r}`).join('<br>');
   } else {
-    statusEl.textContent = 'VIGENTE / OK';
-    statusEl.style.color = '#2e7d32';
-    detailsEl.textContent = 'No hay servicios obligatorios sin registrar que anulen la garantía.';
+    $('warrantyBadge').textContent = 'VIGENTE'; $('warrantyBadge').className = 'status-pill status-ok';
+    $('reasons').textContent = '';
   }
+}
+
+/* On load: try to restore */
+window.addEventListener('load', () => {
+  if(!loadState()){
+    // prefill with defaults if none
+    $('fechaFactura').value = '';
+    $('kmActual').value = '0';
+  }
+});
+
+/* Helper: validate all rows before saving/export */
+function validateAll(){
+  let ok = true;
+  document.querySelectorAll('#svcTable tbody tr').forEach(tr => {
+    const num = Number(tr.dataset.num);
+    const s = state.find(x=>x.num===num);
+    if(!validateRow(tr,s)) ok = false;
+  });
+  return ok;
 }
 </script>
 </body>
