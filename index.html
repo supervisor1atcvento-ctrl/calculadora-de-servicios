@@ -3,17 +3,16 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Calculadora VENTO — Dashboard con Alertas</title>
+<title>Calculadora VENTO — Servicios requeridos</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0f1724; --panel:#071227; --card:#0b1220; --muted:#9aa4b2; --accent:#0f6cff;
-  --accent-2:#f28f17; --success:#16a34a; --danger:#ef4444; --warn:#f59e0b;
+  --bg:#0f1724; --muted:#9aa4b2; --accent:#0f6cff; --success:#16a34a; --danger:#ef4444;
   --radius:12px; --shadow: 0 10px 30px rgba(2,6,23,0.6);
 }
 *{box-sizing:border-box}
 body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; background:linear-gradient(180deg,#071028 0%, #071827 60%); color:#e6eef8;}
-.app{max-width:1200px;margin:28px auto;padding:20px;}
+.app{max-width:1100px;margin:28px auto;padding:20px;}
 .header{display:flex;gap:16px;align-items:center;margin-bottom:18px;}
 .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#2b8cff);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:18px;box-shadow:0 8px 30px rgba(15,108,255,0.18);}
 .title{font-size:20px;font-weight:700;margin:0;}
@@ -23,7 +22,7 @@ body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; mar
 .input[type="number"]{width:140px;}
 .btn-primary{background:linear-gradient(90deg,var(--accent),#2b8cff);color:#fff;border:0;cursor:pointer;padding:10px 14px;border-radius:10px;font-weight:700;box-shadow:0 8px 24px rgba(15,108,255,0.12);}
 .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);cursor:pointer;padding:9px 12px;border-radius:10px;}
-.grid{display:grid;grid-template-columns:1fr 380px;gap:18px;margin-top:18px;}
+.grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px;}
 .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;border:1px solid rgba(255,255,255,0.03);}
 .kpi{display:flex;gap:12px;align-items:center;margin-bottom:12px;}
 .kpi .item{flex:1;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);text-align:center;}
@@ -48,8 +47,6 @@ th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;backg
 .alert-item{padding:8px;border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
 .audit-log{max-height:180px;overflow:auto;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02);margin-top:8px}
 .hidden{display:none}
-.btn-danger{background:linear-gradient(90deg,var(--danger),#f43f5e);color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
-.row-actions{display:flex;gap:8px;align-items:center}
 .tooltip{position:relative}
 .tooltip:hover::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#071827;color:#e6eef8;padding:8px;border-radius:8px;font-size:12px;white-space:nowrap;box-shadow:0 8px 24px rgba(2,6,23,0.6)}
 @media (max-width:980px){ .grid{grid-template-columns:1fr} .controls{flex-wrap:wrap} }
@@ -61,7 +58,7 @@ th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;backg
     <div class="logo">V</div>
     <div>
       <h1 class="title">Calculadora VENTO</h1>
-      <div class="subtitle">Calculadora enfocada en servicios requeridos por fecha y km</div>
+      <div class="subtitle">Servicios requeridos según fecha de factura y km actual</div>
     </div>
 
     <div class="controls">
@@ -95,7 +92,7 @@ th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;backg
         </div>
       </div>
 
-      <div class="table-wrap" role="region" aria-label="Tabla de servicios">
+      <div class="table-wrap" role="region" aria-label="Tabla de servicios requeridos">
         <table id="svcTable" aria-live="polite">
           <thead>
             <tr>
@@ -103,12 +100,10 @@ th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;backg
               <th>Km límite</th>
               <th>Meses</th>
               <th>Fecha límite</th>
-              <th>Requerido</th>
               <th>Realizado</th>
               <th>Fecha realizado</th>
               <th>Km realizado</th>
               <th>Estado</th>
-              <th>Acciones</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -141,21 +136,13 @@ th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;backg
       <div class="small">Alertas recientes</div>
       <div id="alertList" class="alert-list"></div>
 
-      <div style="margin-top:12px">
-        <div class="small">Acciones rápidas</div>
-        <div style="margin-top:8px;display:flex;gap:8px;flex-direction:column">
-          <button id="btnMarkAllDone" class="btn-primary">Marcar todos realizados</button>
-          <button id="btnClearDone" class="btn-ghost">Limpiar realizados</button>
-        </div>
-      </div>
-
       <div style="margin-top:12px" class="small">Guardado automático en tu navegador. Exporta para compartir.</div>
     </aside>
   </div>
 </div>
 
 <script>
-/* Datos de servicio */
+/* Servicios */
 const SERVICES = [
   {num:1, km:300, months:1},{num:2, km:2000, months:3},{num:3, km:4000, months:6},
   {num:4, km:6000, months:9},{num:5, km:9000, months:12},{num:6, km:12000, months:15},
@@ -171,9 +158,10 @@ const fmt = d => d ? new Date(d).toLocaleDateString('es-MX') : '-';
 
 let invoiceDate = null;
 let kmActual = 0;
-let state = []; // {num, kmLimit, months, fechaLimit, required, done, fecha, km}
-window.alerts = []; // alert objects
-const STORAGE_KEY = 'vento_calc_alerts_v1';
+let state = []; // only required services will be stored here
+let allServices = []; // full list with limits
+window.alerts = [];
+const STORAGE_KEY = 'vento_calc_required_v1';
 const ALERTS_KEY = 'vento_alerts_v1';
 const AUDIT_KEY = 'vento_audit_v1';
 
@@ -194,11 +182,9 @@ function loadState(){
   }catch(e){ return false; }
 }
 
-/* Alerts persistence */
+/* Alerts & audit */
 function saveAlerts(){ localStorage.setItem(ALERTS_KEY, JSON.stringify(window.alerts || [])); renderAlertList(); }
 function loadAlerts(){ window.alerts = JSON.parse(localStorage.getItem(ALERTS_KEY) || '[]'); renderAlertList(); }
-
-/* Audit */
 function appendAudit(message){
   const audits = JSON.parse(localStorage.getItem(AUDIT_KEY) || '[]');
   audits.unshift({ts: new Date().toISOString(), user: 'Asesor', message});
@@ -220,7 +206,8 @@ $('btnCalc').addEventListener('click', () => {
   invoiceDate = $('fechaFactura').value;
   kmActual = Number($('kmActual').value || 0);
   if(!invoiceDate){ alert('Ingresa la fecha de factura'); return; }
-  initState();
+  buildAllServices();
+  buildRequiredList();
   renderTable();
   recomputeSummary();
   saveState();
@@ -231,49 +218,62 @@ $('btnReset').addEventListener('click', () => {
   localStorage.removeItem(STORAGE_KEY);
   localStorage.removeItem(ALERTS_KEY);
   localStorage.removeItem(AUDIT_KEY);
-  invoiceDate = null; kmActual = 0; state = []; window.alerts = [];
+  invoiceDate = null; kmActual = 0; state = []; allServices = []; window.alerts = [];
   $('fechaFactura').value=''; $('kmActual').value='0';
   tbody.innerHTML=''; recomputeSummary(); renderAlertList(); renderAuditList();
 });
 
 $('btnSave').addEventListener('click', saveState);
-$('btnMarkAllDone').addEventListener('click', () => { state.forEach(s=>{ s.done=true; if(!s.fecha) s.fecha = new Date().toISOString().slice(0,10); if(!s.km) s.km = kmActual; }); renderTable(); recomputeSummary(); saveState(); });
-$('btnClearDone').addEventListener('click', () => { state.forEach(s=>{ s.done=false; s.fecha=''; s.km=''; }); renderTable(); recomputeSummary(); saveState(); });
-
 $('btnExport').addEventListener('click', () => {
-  const rows = [['Servicio','Km límite','Meses','Fecha límite','Requerido','Realizado','Fecha realizado','Km realizado','Estado']];
-  state.forEach(s=> rows.push([s.num, s.kmLimit, s.months, fmt(s.fechaLimit), s.required ? 'Sí':'No', s.done ? 'Sí':'No', s.fecha || '', s.km || '', getRowStateText(s)]));
+  const rows = [['Servicio','Km límite','Meses','Fecha límite','Realizado','Fecha realizado','Km realizado','Estado']];
+  state.forEach(s=> rows.push([s.num, s.kmLimit, s.months, fmt(s.fechaLimit), s.done ? 'Sí':'No', s.fecha || '', s.km || '', getRowStateText(s)]));
   const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'vento_servicios_alertas.csv'; a.click(); URL.revokeObjectURL(url);
-  appendAudit('Exportado CSV de servicios');
+  const a = document.createElement('a'); a.href = url; a.download = 'vento_servicios_requeridos.csv'; a.click(); URL.revokeObjectURL(url);
+  appendAudit('Exportado CSV de servicios requeridos');
 });
 
-/* Initialize state */
-function initState(){
-  state = SERVICES.map(s => {
+/* Build full service list with limits */
+function buildAllServices(){
+  allServices = SERVICES.map(s => {
     const fechaLimit = addMonths(invoiceDate, s.months);
-    const required = (kmActual >= s.km) || (new Date() >= fechaLimit);
-    return { num: s.num, kmLimit: s.km, months: s.months, fechaLimit: fechaLimit.toISOString(), required, done:false, fecha:'', km:'' };
+    return { num: s.num, kmLimit: s.km, months: s.months, fechaLimit: fechaLimit.toISOString() };
   });
 }
 
-/* Render table */
+/* Build list of only required services (by date or km) */
+function buildRequiredList(){
+  const today = new Date();
+  state = allServices.filter(s => {
+    const requiredByKm = kmActual >= s.kmLimit;
+    const requiredByDate = today >= new Date(s.fechaLimit);
+    return requiredByKm || requiredByDate;
+  }).map(s => ({ ...s, required: true, done:false, fecha:'', km:'' }));
+  appendAudit(`Lista de servicios requeridos calculada (${state.length} servicios)`);
+}
+
+/* Render table (only required services) */
 function renderTable(){
   tbody.innerHTML = '';
+  if(state.length === 0){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="8" class="small">No hay servicios requeridos por fecha o km.</td>`;
+    tbody.appendChild(tr);
+    return;
+  }
+
   state.forEach(s => {
     const tr = document.createElement('tr');
     tr.dataset.num = s.num;
     if(s.done) tr.classList.add('row-done');
-    else if(s.required) tr.classList.add('row-required');
+    else tr.classList.add('row-required');
 
     tr.innerHTML = `
       <td>${s.num}</td>
       <td>${s.kmLimit.toLocaleString()}</td>
       <td>${s.months}</td>
       <td>${fmt(s.fechaLimit)}</td>
-      <td style="text-align:center"><input type="checkbox" class="chkReq" ${s.required ? 'checked' : ''}></td>
       <td style="text-align:center">
         <select class="selDone">
           <option value="no" ${!s.done ? 'selected' : ''}>No</option>
@@ -283,21 +283,13 @@ function renderTable(){
       <td><input class="inp inpDate" type="date" value="${s.fecha || ''}" ${s.done ? '' : 'disabled'}></td>
       <td><input class="inp inpKm" type="number" min="0" value="${s.km || ''}" ${s.done ? '' : 'disabled'}></td>
       <td class="msgCell small"></td>
-      <td class="small"><div class="row-actions">
-        <button class="btn-ghost btnRowReview">Solicitar revisión</button>
-        <button class="btn-ghost btnRowEvidence">Adjuntar evidencia</button>
-      </div></td>
     `;
     tbody.appendChild(tr);
 
-    const chkReq = tr.querySelector('.chkReq');
     const selDone = tr.querySelector('.selDone');
     const inpDate = tr.querySelector('.inpDate');
     const inpKm = tr.querySelector('.inpKm');
-    const btnReview = tr.querySelector('.btnRowReview');
-    const btnEvidence = tr.querySelector('.btnRowEvidence');
 
-    chkReq.addEventListener('change', () => { s.required = chkReq.checked; recomputeSummary(); saveState(); renderRowState(tr,s); });
     selDone.addEventListener('change', () => {
       s.done = selDone.value === 'si';
       inpDate.disabled = !s.done; inpKm.disabled = !s.done;
@@ -307,18 +299,6 @@ function renderTable(){
     inpDate.addEventListener('change', () => { s.fecha = inpDate.value; validateRow(tr,s); recomputeSummary(); saveState(); });
     inpKm.addEventListener('input', () => { s.km = inpKm.value; validateRow(tr,s); recomputeSummary(); saveState(); });
 
-    btnReview.addEventListener('click', () => {
-      pushAlert('Solicitud de revisión','Media', s.num, `Revisión solicitada por asesor para servicio ${s.num}`);
-      appendAudit(`Solicitud de revisión para servicio ${s.num}`);
-      alert('Solicitud de revisión registrada (simulado).');
-    });
-
-    btnEvidence.addEventListener('click', () => {
-      pushAlert('Evidencia adjunta','Baja', s.num, `Evidencia adjunta por asesor para servicio ${s.num}`);
-      appendAudit(`Evidencia adjunta para servicio ${s.num}`);
-      alert('Marca de evidencia registrada en el sistema (simulado).');
-    });
-
     renderRowState(tr,s);
   });
 }
@@ -327,7 +307,7 @@ function renderTable(){
 function renderRowState(tr,s){
   tr.classList.remove('row-done','row-bad','row-required');
   if(s.done) tr.classList.add('row-done');
-  else if(s.required) tr.classList.add('row-required');
+  else tr.classList.add('row-required');
   validateRow(tr,s);
 }
 
@@ -361,18 +341,20 @@ function validateRow(tr,s){
       return true;
     }
     msgCell.textContent = 'Registrado';
+    appendAudit(`Servicio ${s.num} registrado: ${s.fecha} · ${s.km} km`);
     return true;
   } else {
+    // not done but required (all rows are required)
     const fechaLim = new Date(s.fechaLimit);
     const overdueByDate = new Date() > fechaLim;
     const overdueByKm = kmActual >= s.kmLimit;
-    if(s.required && (overdueByDate || overdueByKm)){
+    if(overdueByDate || overdueByKm){
       msgCell.textContent = 'Requerido y NO realizado — riesgo de anulación';
       tr.classList.add('row-bad');
       pushAlert('Requerido y no realizado','Alta', s.num, `Servicio ${s.num} requerido y no realizado. Fecha límite ${fmt(s.fechaLimit)} · Km límite ${s.kmLimit.toLocaleString()}`);
       return false;
     }
-    msgCell.textContent = s.required ? 'Requerido' : '';
+    msgCell.textContent = 'Requerido';
     return true;
   }
 }
@@ -411,9 +393,8 @@ function getRowStateText(s){
     const fechaLim = new Date(s.fechaLimit);
     const overdueByDate = new Date() > fechaLim;
     const overdueByKm = kmActual >= s.kmLimit;
-    if(s.required && (overdueByDate || overdueByKm)) return 'Requerido y NO realizado (vencido)';
-    if(s.required) return 'Requerido';
-    return 'No requerido';
+    if(overdueByDate || overdueByKm) return 'Requerido y NO realizado (vencido)';
+    return 'Requerido';
   }
 }
 
@@ -423,14 +404,13 @@ function recomputeSummary(){
   const vigText = (new Date() > vigDate || kmActual > 33000) ? `Vencida (hasta ${fmt(vigDate)} / 33,000 km)` : `Válida hasta ${fmt(vigDate)} o 33,000 km`;
   $('vigenciaInfo').textContent = vigText;
 
-  let required = 0, pending = 0;
+  let required = state.length;
+  let pending = state.filter(s => !s.done).length;
   const reasons = [];
   state.forEach(s => {
-    if(s.required) required++;
     if(s.required && !s.done){
       const overdueByDate = new Date() > new Date(s.fechaLimit);
       if(overdueByDate) reasons.push(`Servicio ${s.num} requerido por fecha y no realizado (límite ${fmt(s.fechaLimit)})`);
-      pending++;
     }
   });
 
