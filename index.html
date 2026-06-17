@@ -7,20 +7,43 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0f1724; --muted:#9aa4b2; --accent:#0f6cff; --success:#16a34a; --danger:#ef4444;
-  --radius:12px; --shadow: 0 10px 30px rgba(2,6,23,0.6);
+  /* Paleta VENTO (institucional) */
+  --bg:#071028;
+  --panel:#071827;
+  --card:#0b1220;
+  --muted:#9aa4b2;
+  --vento-blue:#0f6cff;    /* color principal VENTO */
+  --vento-orange:#f28f17;  /* color secundario VENTO */
+  --success:#16a34a;
+  --danger:#ef4444;
+  --radius:12px;
+  --shadow: 0 10px 30px rgba(2,6,23,0.6);
 }
 *{box-sizing:border-box}
-body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; background:linear-gradient(180deg,#071028 0%, #071827 60%); color:#e6eef8;}
+body{
+  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  margin:0;
+  background:linear-gradient(180deg,var(--bg) 0%, #071827 60%);
+  color:#e6eef8;
+}
 .app{max-width:1100px;margin:28px auto;padding:20px;}
 .header{display:flex;gap:16px;align-items:center;margin-bottom:18px;}
-.logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#2b8cff);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:18px;box-shadow:0 8px 30px rgba(15,108,255,0.18);}
+.logo{
+  width:56px;height:56px;border-radius:12px;
+  background:linear-gradient(135deg,var(--vento-blue),#2b8cff);
+  display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:18px;
+  box-shadow:0 8px 30px rgba(15,108,255,0.18);
+}
 .title{font-size:20px;font-weight:700;margin:0;}
 .subtitle{font-size:13px;color:var(--muted);margin-top:4px;}
 .controls{display:flex;gap:10px;align-items:center;margin-left:auto;}
 .input,select,button,textarea{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:14px;}
 .input[type="number"]{width:140px;}
-.btn-primary{background:linear-gradient(90deg,var(--accent),#2b8cff);color:#fff;border:0;cursor:pointer;padding:10px 14px;border-radius:10px;font-weight:700;box-shadow:0 8px 24px rgba(15,108,255,0.12);}
+.btn-primary{
+  background:linear-gradient(90deg,var(--vento-blue),#2b8cff);
+  color:#fff;border:0;cursor:pointer;padding:10px 14px;border-radius:10px;font-weight:700;
+  box-shadow:0 8px 24px rgba(15,108,255,0.12);
+}
 .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);cursor:pointer;padding:9px 12px;border-radius:10px;}
 .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px;}
 .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;border:1px solid rgba(255,255,255,0.03);}
@@ -41,7 +64,6 @@ th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;backg
 .status-pill{display:inline-block;padding:8px 12px;border-radius:10px;font-weight:700;color:#071827;font-size:13px}
 .status-ok{background:var(--success)}
 .status-bad{background:var(--danger)}
-.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
 .footer-note{margin-top:12px;font-size:13px;color:var(--muted)}
 .hidden{display:none}
 .tooltip{position:relative}
@@ -107,11 +129,6 @@ th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;backg
         </table>
       </div>
 
-      <div class="actions">
-        <button id="btnExport" class="btn-ghost tooltip" data-tip="Descargar CSV de la tabla">Exportar CSV</button>
-        <button id="btnSave" class="btn-primary tooltip" data-tip="Guardar en este equipo">Guardar</button>
-      </div>
-
       <div id="msgArea" class="footer-note"></div>
     </div>
 
@@ -123,7 +140,7 @@ th{font-weight:600;color:var(--muted);font-size:13px;position:sticky;top:0;backg
         <div id="reasons" class="small" style="margin-top:8px;color:var(--danger)"></div>
       </div>
 
-      <div style="margin-top:12px" class="small">Guardado automático en tu navegador. Exporta para compartir.</div>
+      <div style="margin-top:12px" class="small">Interfaz adaptada a colores institucionales VENTO.</div>
     </aside>
   </div>
 </div>
@@ -148,8 +165,7 @@ let kmActual = 0;
 let state = []; // only required services will be stored here
 let allServices = []; // full list with limits
 
-const STORAGE_KEY = 'vento_calc_required_v3';
-const AUDIT_KEY = 'vento_audit_v3';
+const STORAGE_KEY = 'vento_calc_required_v4';
 
 /* Persistence */
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify({invoiceDate, kmActual, state})); $('msgArea').textContent = 'Guardado local.'; setTimeout(()=>$('msgArea').textContent='',1200); }
@@ -186,17 +202,6 @@ $('btnReset').addEventListener('click', () => {
   tbody.innerHTML=''; recomputeSummary();
 });
 
-$('btnSave').addEventListener('click', saveState);
-$('btnExport').addEventListener('click', () => {
-  const rows = [['Servicio','Km límite','Meses','Fecha límite','Realizado','Fecha realizado','Km realizado','Estado']];
-  state.forEach(s=> rows.push([s.num, s.kmLimit, s.months, fmt(s.fechaLimit), s.done ? 'Sí':'No', s.fecha || '', s.km || '', getRowStateText(s)]));
-  const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'vento_servicios_requeridos.csv'; a.click(); URL.revokeObjectURL(url);
-  saveState();
-});
-
 /* Build full service list with limits */
 function buildAllServices(){
   allServices = SERVICES.map(s => {
@@ -231,7 +236,7 @@ function renderTable(){
     if(s.done) tr.classList.add('row-done');
     else tr.classList.add('row-required');
 
-    // Inputs are editable even if not marked done so advisor can enter fecha/km to allow dictamen
+    // Inputs editable so advisor can enter fecha/km to dictaminar
     tr.innerHTML = `
       <td>${s.num}</td>
       <td>${s.kmLimit.toLocaleString()}</td>
@@ -253,7 +258,6 @@ function renderTable(){
     const inpDate = tr.querySelector('.inpDate');
     const inpKm = tr.querySelector('.inpKm');
 
-    // allow entering fecha/km even if not marked done
     selDone.addEventListener('change', () => {
       s.done = selDone.value === 'si';
       renderRowState(tr,s); recomputeSummary(); saveState();
@@ -286,7 +290,6 @@ function validateRow(tr,s){
 
   // If advisor hasn't provided fecha or km yet, prompt to enter them to dictaminar
   if(!s.fecha || !s.km){
-    // If not done and missing data -> request input
     if(!s.done){
       msgCell.textContent = 'Falta fecha y/o km para dictaminar';
       tr.classList.add('row-bad');
@@ -315,22 +318,17 @@ function validateRow(tr,s){
   } else {
     // not done but required and fecha/km provided -> we can determine procedencia
     if(s.fecha && s.km){
-      const fechaLim = new Date(s.fechaLimit);
-      const overdueByDate = new Date() > fechaLim;
-      const overdueByKm = kmActual >= s.kmLimit;
-      // If advisor entered fecha/km but left Realizado = No, we consider it "No procedente" because not marked as done
       msgCell.textContent = 'No procedente — servicio requerido y no realizado';
       tr.classList.add('row-bad');
       return false;
     }
-    // default: missing data handled above
     msgCell.textContent = 'Falta fecha y/o km para dictaminar';
     tr.classList.add('row-bad');
     return false;
   }
 }
 
-/* Helper to get textual state for export */
+/* Helper to get textual state for export or display */
 function getRowStateText(s){
   if(s.done){
     const fechaLim = new Date(s.fechaLimit);
@@ -356,13 +354,12 @@ function recomputeSummary(){
   // 1) If any required service missing fecha/km -> "Falta fecha y/o km para dictaminar"
   // 2) Else if any required service not done -> "No procedente — servicio requerido y no realizado"
   // 3) Else if any done but fuera de plazo -> "Registrado (fuera de plazo)"
-  // 4) Else -> "Todos los servicios requeridos están registrados correctamente"
+  // 4) Else -> "Procedente — servicios registrados"
 
   const missingData = state.find(s => !s.fecha || !s.km);
   if(missingData){
     $('warrantyBadge').textContent = 'Falta fecha y/o km para dictaminar';
     $('warrantyBadge').className = 'status-pill status-bad';
-    // list which services need data
     const list = state.filter(s => !s.fecha || !s.km).map(s => `Servicio ${s.num}: falta fecha y/o km`);
     $('reasons').innerHTML = list.map(r=>`• ${r}`).join('<br>');
   } else {
